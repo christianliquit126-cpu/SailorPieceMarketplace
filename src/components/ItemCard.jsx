@@ -2,55 +2,58 @@ import { useState } from 'react'
 import './ItemCard.css'
 
 // ─── CLICK SOUND ──────────────────────────────────────────────────────────────
-// Uses the Web Audio API to generate a short, satisfying click sound when a
-// card is clicked — no external audio files needed.
+// Uses the Web Audio API to generate a short tap sound on each card click.
+// No external audio files needed — all generated in the browser.
 function playClickSound() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)()
-    const oscillator = ctx.createOscillator()
+    const osc  = ctx.createOscillator()
     const gain = ctx.createGain()
 
-    oscillator.connect(gain)
+    osc.connect(gain)
     gain.connect(ctx.destination)
 
-    // A short, high-frequency click (like a soft UI tap)
-    oscillator.type = 'sine'
-    oscillator.frequency.setValueAtTime(800, ctx.currentTime)
-    oscillator.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.08)
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(800, ctx.currentTime)
+    osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.08)
 
     gain.gain.setValueAtTime(0.25, ctx.currentTime)
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08)
 
-    oscillator.start(ctx.currentTime)
-    oscillator.stop(ctx.currentTime + 0.08)
+    osc.start(ctx.currentTime)
+    osc.stop(ctx.currentTime + 0.08)
   } catch (e) {
-    // Silently ignore if the browser doesn't support Web Audio API
+    // Silently ignore — Web Audio API may not be available in all environments
   }
 }
 
+// ─── ITEM CARD ────────────────────────────────────────────────────────────────
+// Displays a single store item. Clicking the card plays a sound.
+// Clicking "Buy Now" opens the purchase modal.
 export default function ItemCard({ item, onBuy }) {
   const [imgError, setImgError] = useState(false)
-  const rarity = (item.rarity || 'common').toLowerCase()
   const outOfStock = !item.stock || item.stock <= 0
 
-  // Play click sound and open the buy modal
+  // Play sound on card click (but not on button click — that's handled separately)
   const handleCardClick = () => {
     playClickSound()
   }
 
-  // Play click sound and trigger the buy flow
-  const handleBuyClick = () => {
+  // Play sound then open the buy modal
+  const handleBuyClick = (e) => {
+    e.stopPropagation() // prevent bubbling up to the card handler
     playClickSound()
     onBuy(item)
   }
 
   return (
-    // The entire card plays a click sound when clicked
     <div
-      className={`item-card rarity-border-${rarity} ${outOfStock ? 'out-of-stock' : ''}`}
+      className={`item-card ${outOfStock ? 'out-of-stock' : ''}`}
       onClick={handleCardClick}
     >
       <div className="item-card-glow" />
+
+      {/* ── Item image ── */}
       <div className="item-image-wrap">
         {imgError || !item.image ? (
           <div className="item-image-fallback">
@@ -66,14 +69,14 @@ export default function ItemCard({ item, onBuy }) {
           />
         )}
         {outOfStock && <div className="sold-out-overlay">SOLD OUT</div>}
-        <div className={`badge-rarity badge-${rarity} rarity-badge-pos`}>{item.rarity || 'Common'}</div>
       </div>
 
+      {/* ── Item details ── */}
       <div className="item-card-body">
         <p className="item-category">{item.category || 'Uncategorized'}</p>
         <h3 className="item-name">{item.name || 'Unknown Item'}</h3>
 
-        {/* Stock indicator — price is intentionally hidden from the store view */}
+        {/* Stock indicator — no price shown */}
         <div className="item-footer">
           <span className={`item-stock ${outOfStock ? 'stock-zero' : ''}`}>
             {outOfStock ? 'Out of stock' : `${item.stock} left`}
@@ -83,11 +86,7 @@ export default function ItemCard({ item, onBuy }) {
         <button
           className="btn-primary buy-btn"
           disabled={outOfStock}
-          onClick={(e) => {
-            // Stop the click from bubbling up to the card again
-            e.stopPropagation()
-            handleBuyClick()
-          }}
+          onClick={handleBuyClick}
         >
           {outOfStock ? 'Unavailable' : 'Buy Now'}
         </button>

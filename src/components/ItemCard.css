@@ -27,12 +27,6 @@
   z-index: 0;
 }
 
-.rarity-border-uncommon  { border-color: rgba(16,185,129,0.25); }
-.rarity-border-rare      { border-color: rgba(59,130,246,0.25); }
-.rarity-border-epic      { border-color: rgba(139,92,246,0.3); }
-.rarity-border-legendary { border-color: rgba(245,158,11,0.35); }
-.rarity-border-mythical  { border-color: rgba(239,68,68,0.35); }
-.rarity-border-divine    { border-color: rgba(0,212,255,0.4); }
 
 .item-image-wrap {
   position: relative;
@@ -82,11 +76,6 @@
   text-shadow: 0 0 10px rgba(239,68,68,0.6);
 }
 
-.rarity-badge-pos {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-}
 
 .item-card-body {
   padding: 14px 16px 16px;

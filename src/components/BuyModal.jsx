@@ -4,13 +4,13 @@ import { db } from '../firebase'
 import './BuyModal.css'
 
 // ─── DISCORD WEBHOOK ──────────────────────────────────────────────────────────
-// Webhook URL — messages are sent here whenever a purchase is confirmed.
+// Webhook URL — a message is sent here whenever a purchase is confirmed.
 const DISCORD_WEBHOOK_URL =
   'https://discord.com/api/webhooks/1486968367113048194/MvgrzgiJZv2-bY8mT-hun_Ue5aU-rI4Zsrbjn9FuVh3sxZAguBJs3XTiBxj0CFCOAzQa'
 
-// Sends a structured notification to Discord with full order details.
-// Runs silently — a failure never blocks the purchase from completing.
-async function sendDiscordNotification({ name, robloxUsername, itemName, qty, rarity, category }) {
+// Sends a formatted order notification to the Discord admin channel.
+// Runs in the background — a failure here never blocks the purchase.
+async function sendDiscordNotification({ name, robloxUsername, itemName, qty, category }) {
   try {
     const lines = [
       `**New Order Received!**`,
@@ -18,7 +18,6 @@ async function sendDiscordNotification({ name, robloxUsername, itemName, qty, ra
       `**Name:** ${name}`,
       `**Roblox Username:** ${robloxUsername}`,
       `**Item:** ${itemName}`,
-      `**Rarity:** ${rarity || 'Unknown'}`,
       `**Category:** ${category || 'Unknown'}`,
       `**Quantity:** ×${qty}`,
       `**Status:** Pending — awaiting admin review`,
@@ -30,25 +29,25 @@ async function sendDiscordNotification({ name, robloxUsername, itemName, qty, ra
       body: JSON.stringify({ content: lines.join('\n') }),
     })
   } catch (e) {
-    // Discord failure is non-critical — the order still goes through
+    // Non-critical — order still goes through even if Discord is unreachable
     console.warn('Discord notification failed:', e)
   }
 }
 
 // ─── BUY MODAL ────────────────────────────────────────────────────────────────
-// Shown when a user clicks "Buy Now" on an item. Collects the buyer's name and
-// Roblox username, lets them choose quantity, and handles the Firebase write
-// plus the Discord notification on confirm.
+// Shown when a user clicks "Buy Now". Collects the buyer's name and Roblox
+// username (both required), lets them choose a quantity, then writes the order
+// to Firebase and sends a Discord notification on confirm.
 export default function BuyModal({ item, onClose }) {
-  // Buyer identity fields
-  const [buyerName, setBuyerName]           = useState('')
+  // Buyer identity fields — both are required before purchase can proceed
+  const [buyerName,      setBuyerName]      = useState('')
   const [robloxUsername, setRobloxUsername] = useState('')
 
   // Order state
-  const [qty, setQty]       = useState(1)
+  const [qty,     setQty]     = useState(1)
   const [loading, setLoading] = useState(false)
-  const [done, setDone]     = useState(false)
-  const [error, setError]   = useState(null)
+  const [done,    setDone]    = useState(false)
+  const [error,   setError]   = useState(null)
 
   const maxQty = item.stock || 0
 
@@ -57,17 +56,17 @@ export default function BuyModal({ item, onClose }) {
     setQty(q => Math.max(1, Math.min(maxQty, q + delta)))
   }
 
-  // Validates required fields and returns an error string or null
+  // Client-side validation — returns an error string or null
   const validate = () => {
-    if (!buyerName.trim())       return 'Please enter your name.'
-    if (!robloxUsername.trim())  return 'Please enter your Roblox username.'
+    if (!buyerName.trim())      return 'Please enter your name.'
+    if (!robloxUsername.trim()) return 'Please enter your Roblox username.'
     if (qty < 1 || qty > maxQty) return 'Invalid quantity.'
     return null
   }
 
   const handleBuy = async () => {
-    const validationError = validate()
-    if (validationError) { setError(validationError); return }
+    const err = validate()
+    if (err) { setError(err); return }
 
     setLoading(true)
     setError(null)
@@ -80,13 +79,12 @@ export default function BuyModal({ item, onClose }) {
         itemId:        item._id,
         itemName:      item.name,
         category:      item.category || '',
-        rarity:        item.rarity   || '',
         quantity:      qty,
         timestamp:     Date.now(),
         status:        'pending',
       })
 
-      // 2. Reduce the item's stock in Firebase
+      // 2. Decrement the item's stock in Firebase
       await update(ref(db, `items/${item._id}`), { stock: maxQty - qty })
 
       // 3. Notify the Discord admin channel (fire-and-forget)
@@ -95,7 +93,6 @@ export default function BuyModal({ item, onClose }) {
         robloxUsername: robloxUsername.trim(),
         itemName:      item.name,
         qty,
-        rarity:        item.rarity,
         category:      item.category,
       })
 
@@ -108,11 +105,14 @@ export default function BuyModal({ item, onClose }) {
     }
   }
 
-  // Buyer fields are required — the Confirm button stays disabled until filled
+  // Confirm button is disabled until both identity fields are filled in
   const canSubmit = buyerName.trim() && robloxUsername.trim() && maxQty >= 1 && !loading
 
   return (
-    <div className="modal-backdrop" onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div
+      className="modal-backdrop"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div className="modal-box animate-fade-in">
 
         {/* Close button */}
@@ -121,7 +121,7 @@ export default function BuyModal({ item, onClose }) {
         </button>
 
         {done ? (
-          // ── Success screen shown after a confirmed purchase ──
+          /* ── Success screen ── */
           <div className="modal-success">
             <div className="success-ring"><span className="ci ci-check" /></div>
             <h2 className="success-title">Order Placed!</h2>
@@ -147,20 +147,21 @@ export default function BuyModal({ item, onClose }) {
               <p className="modal-sub">Fill in your details to place this order</p>
             </div>
 
-            {/* Item preview card inside the modal */}
+            {/* Item preview */}
             <div className="modal-item-preview">
               {item.image ? (
-                <img src={item.image} alt={item.name} className="modal-item-img"
-                     onError={e => e.target.style.display = 'none'} />
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="modal-item-img"
+                  onError={e => e.target.style.display = 'none'}
+                />
               ) : (
                 <div className="modal-item-img-fallback"><span className="ci ci-card" /></div>
               )}
               <div className="modal-item-info">
-                <span className={`badge-rarity badge-${(item.rarity || 'common').toLowerCase()}`}>
-                  {item.rarity || 'Common'}
-                </span>
+                <span className="modal-item-category">{item.category || 'Uncategorized'}</span>
                 <h3>{item.name}</h3>
-                <p className="modal-item-cat">{item.category || 'Uncategorized'}</p>
               </div>
             </div>
 
@@ -205,7 +206,7 @@ export default function BuyModal({ item, onClose }) {
               <span className="modal-stock-hint">{maxQty} in stock</span>
             </div>
 
-            {/* Inline error message */}
+            {/* Inline validation error */}
             {error && <p className="modal-error">{error}</p>}
 
             {/* Action buttons */}

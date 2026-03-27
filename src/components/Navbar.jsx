@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import './Navbar.css'
 
-export default function Navbar() {
+export default function Navbar({ theme, onToggleTheme }) {
   const { pathname } = useLocation()
   return (
     <nav className="navbar">
@@ -15,9 +15,19 @@ export default function Navbar() {
           <Link to="/" className={`nav-link ${pathname === '/' ? 'active' : ''}`}>Shop</Link>
           <Link to="/admin" className={`nav-link ${pathname === '/admin' ? 'active' : ''}`}>Admin</Link>
         </div>
-        <div className="navbar-status">
-          <span className="status-dot" />
-          <span className="status-text">Live</span>
+        <div className="navbar-right">
+          <button
+            className="theme-toggle"
+            onClick={onToggleTheme}
+            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          >
+            <span className={`theme-icon ${theme === 'dark' ? 'ci-sun' : 'ci-moon'}`} />
+          </button>
+          <div className="navbar-status">
+            <span className="status-dot" />
+            <span className="status-text">Live</span>
+          </div>
         </div>
       </div>
     </nav>

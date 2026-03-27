@@ -51,8 +51,6 @@ export default function ItemCard({ item, onBuy }) {
       className={`item-card ${outOfStock ? 'out-of-stock' : ''}`}
       onClick={handleCardClick}
     >
-      <div className="item-card-glow" />
-
       {/* ── Item image ── */}
       <div className="item-image-wrap">
         {imgError || !item.image ? (

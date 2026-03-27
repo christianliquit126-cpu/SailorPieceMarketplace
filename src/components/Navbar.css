@@ -2,16 +2,15 @@
   position: sticky;
   top: 0;
   z-index: 200;
-  background: rgba(8, 12, 20, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--bg-secondary);
   border-bottom: 1px solid var(--border);
+  transition: background 0.25s, border-color 0.25s;
 }
 
 .navbar-inner {
   display: flex;
   align-items: center;
-  height: 64px;
+  height: 60px;
   gap: 32px;
 }
 
@@ -25,21 +24,19 @@
 .brand-icon {
   width: 22px;
   height: 24px;
-  color: var(--cyan);
-  filter: drop-shadow(0 0 6px rgba(0, 212, 255, 0.7));
+  color: var(--accent);
 }
 
 .brand-name {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 1.35rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
 }
 
 .brand-accent {
-  color: var(--cyan);
-  text-shadow: 0 0 12px rgba(0, 212, 255, 0.5);
+  color: var(--accent);
 }
 
 .brand-tag {
@@ -51,6 +48,7 @@
   padding: 2px 7px;
   border-radius: 4px;
   margin-left: 2px;
+  transition: border-color 0.25s;
 }
 
 .navbar-links {
@@ -63,28 +61,61 @@
   color: var(--text-secondary);
   font-weight: 500;
   font-size: 0.9rem;
-  padding: 6px 16px;
+  padding: 6px 14px;
   border-radius: var(--radius-sm);
-  transition: all 0.2s;
-  letter-spacing: 0.03em;
+  transition: color 0.2s, background 0.2s;
 }
 
 .nav-link:hover {
   color: var(--text-primary);
-  background: rgba(255,255,255,0.04);
+  background: var(--bg-card-hover);
 }
 
 .nav-link.active {
-  color: var(--cyan);
-  background: var(--cyan-glow);
-  text-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
+  color: var(--accent);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+/* ── THEME TOGGLE BUTTON ── */
+.theme-toggle {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
+}
+
+.theme-icon {
+  display: inline-block;
+  position: relative;
+  flex-shrink: 0;
+  vertical-align: middle;
 }
 
 .navbar-status {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-left: auto;
   font-size: 0.78rem;
   color: var(--text-muted);
 }
@@ -94,11 +125,8 @@
   height: 7px;
   background: var(--green);
   border-radius: 50%;
-  box-shadow: 0 0 8px var(--green);
-  animation: pulse-glow 2s ease infinite;
 }
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 4px var(--green); }
-  50% { box-shadow: 0 0 12px var(--green), 0 0 20px rgba(16,185,129,0.3); }
+.status-text {
+  white-space: nowrap;
 }

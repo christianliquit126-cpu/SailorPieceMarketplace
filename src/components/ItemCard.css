@@ -4,34 +4,23 @@
   border-radius: var(--radius);
   border: 1px solid var(--border);
   overflow: hidden;
-  transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
-  animation: fadeIn 0.4s ease forwards;
+  transition: border-color 0.2s, background 0.2s;
+  animation: fadeIn 0.3s ease forwards;
 }
 
 .item-card:hover {
-  transform: translateY(-5px);
   border-color: var(--border-hover);
-  box-shadow: var(--shadow-glow);
   background: var(--bg-card-hover);
 }
 
 .item-card.out-of-stock {
-  opacity: 0.6;
+  opacity: 0.55;
 }
-
-.item-card-glow {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(0,212,255,0.05) 0%, transparent 70%);
-  z-index: 0;
-}
-
 
 .item-image-wrap {
   position: relative;
   aspect-ratio: 1;
-  background: linear-gradient(135deg, #0a1220 0%, #0d1825 100%);
+  background: var(--bg-secondary);
   overflow: hidden;
 }
 
@@ -39,11 +28,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.35s;
+  transition: transform 0.3s;
 }
 
 .item-card:hover .item-image {
-  transform: scale(1.06);
+  transform: scale(1.04);
 }
 
 .item-image-fallback {
@@ -52,10 +41,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #0a1220, #0f1a2e);
+  background: var(--bg-secondary);
+  color: var(--border-hover);
 }
 
-/* The CSS card icon fills the fallback area */
 .item-image-fallback .ci-card {
   width: 60%;
   height: 60%;
@@ -64,23 +53,23 @@
 .sold-out-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: 'Rajdhani', sans-serif;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: #ef4444;
+  color: var(--red);
   letter-spacing: 0.1em;
-  text-shadow: 0 0 10px rgba(239,68,68,0.6);
 }
 
+[data-theme="light"] .sold-out-overlay {
+  background: rgba(255,255,255,0.55);
+}
 
 .item-card-body {
-  padding: 14px 16px 16px;
-  position: relative;
-  z-index: 1;
+  padding: 12px 14px 14px;
 }
 
 .item-category {
@@ -93,10 +82,10 @@
 
 .item-name {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -107,15 +96,13 @@
 .item-footer {
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
-/* Stock indicator shown below the item name */
 .item-stock {
   font-size: 0.8rem;
   color: var(--green);
   font-weight: 600;
-  letter-spacing: 0.02em;
 }
 
 .item-stock.stock-zero {
@@ -124,7 +111,6 @@
 
 .buy-btn {
   width: 100%;
-  padding: 10px;
-  font-size: 0.9rem;
-  letter-spacing: 0.05em;
+  padding: 9px;
+  font-size: 0.875rem;
 }

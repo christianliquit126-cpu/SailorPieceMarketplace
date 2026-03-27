@@ -1,8 +1,7 @@
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.75);
-  backdrop-filter: blur(6px);
+  background: rgba(0,0,0,0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10,46 +9,48 @@
   padding: 16px;
 }
 
+[data-theme="light"] .modal-backdrop {
+  background: rgba(0,0,0,0.35);
+}
+
 .modal-box {
   background: var(--bg-modal);
-  border: 1px solid rgba(0,212,255,0.2);
-  border-radius: 16px;
-  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
   width: 100%;
   max-width: 460px;
   position: relative;
-  box-shadow: 0 0 60px rgba(0,212,255,0.12), 0 24px 60px rgba(0,0,0,0.6);
 }
 
 .modal-close {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  background: rgba(255,255,255,0.06);
+  top: 14px;
+  right: 14px;
+  background: var(--bg-card);
   border: 1px solid var(--border);
   color: var(--text-secondary);
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: border-color 0.2s, color 0.2s;
 }
 
 .modal-close:hover {
-  background: rgba(239,68,68,0.15);
+  border-color: var(--red);
   color: var(--red);
-  border-color: rgba(239,68,68,0.3);
 }
 
 .modal-header {
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .modal-title {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -62,31 +63,33 @@
 
 .modal-item-preview {
   display: flex;
-  gap: 16px;
-  padding: 16px;
-  background: rgba(255,255,255,0.03);
+  gap: 14px;
+  padding: 14px;
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .modal-item-img {
-  width: 80px;
-  height: 80px;
+  width: 72px;
+  height: 72px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
   flex-shrink: 0;
 }
 
 .modal-item-img-fallback {
-  width: 80px;
-  height: 80px;
-  background: var(--bg-card);
-  border-radius: 8px;
+  width: 72px;
+  height: 72px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  color: var(--border-hover);
   flex-shrink: 0;
 }
 
@@ -99,33 +102,26 @@
 
 .modal-item-info h3 {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 700;
+  color: var(--text-primary);
 }
 
 .modal-item-category {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-weight: 600;
-  margin-bottom: 4px;
   display: block;
 }
 
-.modal-item-each {
-  font-size: 0.85rem;
-  color: var(--cyan);
-  font-weight: 600;
-  margin-top: 2px;
-}
-
-/* ── Buyer identity input fields ── */
+/* ── Input fields ── */
 .modal-fields {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .modal-field {
@@ -144,14 +140,14 @@
 
 .modal-input {
   width: 100%;
-  background: rgba(255,255,255,0.04);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 10px 14px;
+  padding: 9px 12px;
   color: var(--text-primary);
   font-size: 0.9rem;
   font-family: inherit;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s;
   box-sizing: border-box;
 }
 
@@ -161,17 +157,15 @@
 
 .modal-input:focus {
   outline: none;
-  border-color: rgba(0,212,255,0.5);
-  box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
-  background: rgba(0,212,255,0.04);
+  border-color: var(--accent);
 }
 
-/* ── ─ ── */
+/* ── Quantity row ── */
 .modal-qty-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .modal-label {
@@ -184,18 +178,17 @@
 .qty-control {
   display: flex;
   align-items: center;
-  gap: 0;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   overflow: hidden;
 }
 
 .qty-btn {
-  background: rgba(255,255,255,0.04);
+  background: var(--bg-card);
   border: none;
   color: var(--text-primary);
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   font-size: 1.1rem;
   transition: background 0.15s;
   display: flex;
@@ -204,8 +197,7 @@
 }
 
 .qty-btn:hover:not(:disabled) {
-  background: var(--cyan-glow);
-  color: var(--cyan);
+  background: var(--bg-card-hover);
 }
 
 .qty-btn:disabled {
@@ -214,13 +206,16 @@
 }
 
 .qty-value {
-  min-width: 40px;
+  min-width: 38px;
   text-align: center;
   font-family: 'Rajdhani', sans-serif;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--text-primary);
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
   padding: 0 4px;
+  line-height: 34px;
 }
 
 .modal-stock-hint {
@@ -229,128 +224,100 @@
   margin-left: auto;
 }
 
-.modal-total-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  background: var(--cyan-glow);
-  border: 1px solid rgba(0,212,255,0.2);
-  border-radius: var(--radius-sm);
-  margin-bottom: 20px;
-}
-
-.modal-total-value {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--cyan);
-  text-shadow: 0 0 12px rgba(0,212,255,0.4);
-  margin-left: auto;
-}
-
 .modal-error {
   color: var(--red);
   font-size: 0.85rem;
   margin-bottom: 12px;
   padding: 8px 12px;
-  background: rgba(239,68,68,0.1);
+  background: rgba(239,68,68,0.08);
   border: 1px solid rgba(239,68,68,0.25);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
 }
 
 .modal-actions {
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 
 .modal-actions .btn-ghost,
 .modal-actions .btn-primary {
   flex: 1;
-  padding: 12px;
-  font-size: 0.95rem;
+  padding: 11px;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .btn-spinner {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   border: 2px solid rgba(255,255,255,0.3);
   border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
 
+/* ── Success screen ── */
 .modal-success {
   text-align: center;
-  padding: 16px 0;
+  padding: 12px 0;
 }
 
 .success-ring {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  background: var(--accent);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 20px;
-  box-shadow: 0 0 30px rgba(0,212,255,0.4);
+  margin: 0 auto 18px;
 }
 
-/* Scale up the checkmark inside the success ring */
 .success-ring .ci-check {
-  width: 28px;
-  height: 22px;
+  width: 26px;
+  height: 20px;
 }
 
 .success-title {
   font-family: 'Rajdhani', sans-serif;
-  font-size: 1.8rem;
+  font-size: 1.7rem;
   font-weight: 700;
-  margin-bottom: 8px;
-  color: var(--cyan);
-  text-shadow: 0 0 20px rgba(0,212,255,0.4);
+  margin-bottom: 6px;
+  color: var(--text-primary);
 }
 
 .success-sub {
   color: var(--text-secondary);
-  font-size: 0.9rem;
-  margin-bottom: 20px;
+  font-size: 0.88rem;
+  margin-bottom: 18px;
 }
 
 .success-summary {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 16px;
-  padding: 12px 20px;
-  background: rgba(255,255,255,0.04);
+  gap: 14px;
+  padding: 10px 18px;
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  margin-bottom: 24px;
+  margin-bottom: 14px;
   font-size: 0.9rem;
   color: var(--text-secondary);
 }
 
-.success-total {
-  color: var(--cyan);
-  font-weight: 700;
-}
-
-/* Buyer details shown on the success screen */
 .success-buyer-info {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 6px 16px;
-  padding: 12px 16px;
-  background: rgba(255,255,255,0.03);
+  gap: 6px 14px;
+  padding: 12px 14px;
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   text-align: left;
   font-size: 0.88rem;
   color: var(--text-primary);
@@ -358,7 +325,7 @@
 
 .success-buyer-label {
   color: var(--text-muted);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;

@@ -9,8 +9,18 @@ export default function Sidebar({ theme, onToggleTheme }) {
   return (
     <aside className="sidebar">
       {/* Brand */}
-      <div className="sidebar-brand">
-        <span className="ci ci-anchor sidebar-logo-icon" />
+      <div className="sidebar-top">
+        <Link to="/" className="sidebar-brand" title="Sailor Piece Marketplace">
+          <div className="sidebar-brand-icon">
+            <span className="ci ci-anchor sidebar-logo-icon" />
+          </div>
+          <span className="sidebar-brand-label">SP</span>
+        </Link>
+
+        {/* Live dot */}
+        <div className="sidebar-live" title="Store is live">
+          <span className="sidebar-live-dot" />
+        </div>
       </div>
 
       {/* Nav icons */}

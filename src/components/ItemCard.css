@@ -7,6 +7,7 @@
   flex-direction: column;
   transition: transform 0.2s, border-color 0.2s;
   cursor: default;
+  position: relative;
 }
 
 .item-card:hover {
@@ -18,13 +19,19 @@
   opacity: 0.6;
 }
 
+/* ── Category accent stripe (top of card) ── */
+.item-cat-stripe {
+  height: 3px;
+  background: var(--cat-color, var(--accent));
+  flex-shrink: 0;
+}
+
 /* ── Image ── */
 .item-image-wrap {
   position: relative;
   aspect-ratio: 1 / 1;
   overflow: hidden;
   background: var(--bg-secondary);
-  border-radius: var(--radius) var(--radius) 0 0;
 }
 
 .item-image {
@@ -71,6 +78,21 @@
   color: var(--red);
 }
 
+/* ── Low stock badge ── */
+.low-stock-badge {
+  position: absolute;
+  bottom: 7px;
+  left: 7px;
+  background: #f97316;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  letter-spacing: 0.03em;
+  pointer-events: none;
+}
+
 /* ── Body ── */
 .item-card-body {
   padding: 12px 14px 14px;
@@ -81,11 +103,11 @@
 }
 
 .item-category {
-  font-size: 0.72rem;
-  color: var(--text-muted);
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
-  font-weight: 500;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .item-name {
@@ -118,6 +140,10 @@
 
 .item-stock-label.out {
   color: var(--red);
+}
+
+.item-stock-label.low {
+  color: #f97316;
 }
 
 /* ── Buy Now pill button ── */

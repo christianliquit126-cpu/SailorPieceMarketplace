@@ -7,13 +7,21 @@ import './Marketplace.css'
 
 const CATEGORIES = ['Specs Set', 'Materials', 'Chest', 'Key']
 
+export const CATEGORY_META = {
+  'All':       { color: '#4f8ef7', label: 'All' },
+  'Specs Set': { color: '#8b5cf6', label: 'Specs Set' },
+  'Materials': { color: '#f59e0b', label: 'Materials' },
+  'Chest':     { color: '#f97316', label: 'Chest' },
+  'Key':       { color: '#22c55e', label: 'Key' },
+}
+
 export default function Marketplace() {
-  const [items, setItems]     = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError]     = useState(null)
-  const [search, setSearch]   = useState('')
+  const [items, setItems]       = useState([])
+  const [loading, setLoading]   = useState(true)
+  const [error, setError]       = useState(null)
+  const [search, setSearch]     = useState('')
   const [category, setCategory] = useState('All')
-  const [buyItem, setBuyItem] = useState(null)
+  const [buyItem, setBuyItem]   = useState(null)
 
   useEffect(() => {
     const itemsRef = ref(db, 'items')
@@ -52,7 +60,7 @@ export default function Marketplace() {
     })
   }, [items, category, search])
 
-  const hasFilters = search || category !== 'All'
+  const hasFilters   = search || category !== 'All'
   const inStockCount = items.filter(i => i.stock > 0).length
 
   return (
@@ -61,15 +69,18 @@ export default function Marketplace() {
       {/* ── Page header ── */}
       <div className="market-header">
         <div className="market-header-left">
-          <h1 className="market-title">Marketplace</h1>
-          <span className="market-subtitle">SailorPiece · Roblox</span>
+          <div className="market-brand-row">
+            <h1 className="market-title">Sailor Piece</h1>
+            <span className="roblox-badge">on Roblox</span>
+          </div>
+          <p className="market-subtitle">Item Marketplace — browse &amp; order in-game items</p>
         </div>
         <div className="market-header-stats">
           <div className="header-stat">
             <span className="header-stat-n">{items.length}</span>
-            <span className="header-stat-l">Items</span>
+            <span className="header-stat-l">Total Items</span>
           </div>
-          <div className="header-stat">
+          <div className="header-stat in-stock">
             <span className="header-stat-n">{inStockCount}</span>
             <span className="header-stat-l">In Stock</span>
           </div>
@@ -82,7 +93,7 @@ export default function Marketplace() {
         <input
           type="text"
           className="search-bar-input"
-          placeholder="Search the Marketplace…"
+          placeholder="Search items by name or category…"
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
@@ -107,14 +118,17 @@ export default function Marketplace() {
 
           <div className="results-bar">
             <span className="results-count">
-              {loading ? 'Loading…' : `${filtered.length} item${filtered.length !== 1 ? 's' : ''} found`}
+              {loading
+                ? 'Loading items…'
+                : `${filtered.length} item${filtered.length !== 1 ? 's' : ''}${category !== 'All' ? ` in ${category}` : ''}`
+              }
             </span>
             {hasFilters && (
               <button
                 className="clear-all-btn"
                 onClick={() => { setSearch(''); setCategory('All') }}
               >
-                Clear all
+                Clear all filters
               </button>
             )}
           </div>
@@ -125,16 +139,19 @@ export default function Marketplace() {
             </div>
           ) : filtered.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-wave-icon" />
+              <div className="empty-anchor-icon">
+                <span className="ci ci-anchor empty-anchor" />
+              </div>
               <h3>No items found</h3>
               <p>
                 {items.length === 0
-                  ? 'The marketplace is currently empty. Check back soon!'
-                  : 'Try a different search or category.'}
+                  ? 'The Sailor Piece marketplace is currently empty. Items will appear here once the admin seeds the database.'
+                  : 'No items match your current search or category filter.'}
               </p>
               {hasFilters && (
                 <button
                   className="btn-ghost"
+                  style={{ marginTop: 4 }}
                   onClick={() => { setSearch(''); setCategory('All') }}
                 >
                   Clear filters
@@ -153,26 +170,48 @@ export default function Marketplace() {
         {/* ── Right filter panel ── */}
         <aside className="market-filter-panel">
           <div className="filter-panel-header">
-            <span className="filter-panel-title">Category filter</span>
+            <span className="filter-panel-title">Category</span>
             {category !== 'All' && (
               <button className="filter-clear-btn" onClick={() => setCategory('All')}>Clear</button>
             )}
           </div>
           <ul className="filter-list">
-            {['All', ...CATEGORIES].map(cat => (
-              <li key={cat}>
-                <button
-                  className={`filter-item ${category === cat ? 'active' : ''}`}
-                  onClick={() => setCategory(cat)}
-                >
-                  <span className="filter-check">
-                    {category === cat && <span className="ci ci-check filter-check-icon" />}
-                  </span>
-                  {cat}
-                </button>
-              </li>
-            ))}
+            {['All', ...CATEGORIES].map(cat => {
+              const meta = CATEGORY_META[cat] || { color: 'var(--accent)' }
+              const isActive = category === cat
+              return (
+                <li key={cat}>
+                  <button
+                    className={`filter-item ${isActive ? 'active' : ''}`}
+                    onClick={() => setCategory(cat)}
+                    style={{ '--cat-color': meta.color }}
+                  >
+                    <span className="filter-dot" style={{ background: meta.color }} />
+                    {cat}
+                    {isActive && <span className="ci ci-check filter-active-check" />}
+                  </button>
+                </li>
+              )
+            })}
           </ul>
+
+          {/* Category item counts */}
+          {!loading && items.length > 0 && (
+            <div className="category-counts">
+              {['All', ...CATEGORIES].map(cat => {
+                const count = cat === 'All'
+                  ? items.length
+                  : items.filter(i => i.category === cat).length
+                if (count === 0 && cat !== 'All') return null
+                return (
+                  <div key={cat} className="cat-count-row">
+                    <span className="cat-count-name">{cat}</span>
+                    <span className="cat-count-n">{count}</span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </aside>
       </div>
 

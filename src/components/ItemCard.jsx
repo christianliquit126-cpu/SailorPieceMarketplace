@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { CATEGORY_META } from '../pages/Marketplace'
 import './ItemCard.css'
 
 function playClickSound() {
@@ -20,7 +21,11 @@ function playClickSound() {
 
 export default function ItemCard({ item, onBuy }) {
   const [imgError, setImgError] = useState(false)
+
   const outOfStock = !item.stock || item.stock <= 0
+  const lowStock   = !outOfStock && item.stock <= 3
+
+  const catColor = (CATEGORY_META[item.category] || CATEGORY_META['All']).color
 
   const handleBuyClick = (e) => {
     e.stopPropagation()
@@ -29,7 +34,12 @@ export default function ItemCard({ item, onBuy }) {
   }
 
   return (
-    <div className={`item-card ${outOfStock ? 'out-of-stock' : ''} animate-fade-in`}>
+    <div
+      className={`item-card ${outOfStock ? 'out-of-stock' : ''} animate-fade-in`}
+      style={{ '--cat-color': catColor }}
+    >
+      {/* Category accent stripe */}
+      <div className="item-cat-stripe" />
 
       {/* Image area */}
       <div className="item-image-wrap">
@@ -47,16 +57,21 @@ export default function ItemCard({ item, onBuy }) {
           />
         )}
         {outOfStock && <div className="sold-out-overlay">SOLD OUT</div>}
+        {lowStock && !outOfStock && (
+          <div className="low-stock-badge">Only {item.stock} left!</div>
+        )}
       </div>
 
       {/* Card body */}
       <div className="item-card-body">
-        <p className="item-category">{item.category || 'Uncategorized'}</p>
+        <p className="item-category" style={{ color: catColor }}>
+          {item.category || 'Uncategorized'}
+        </p>
         <h3 className="item-name">{item.name || 'Unknown Item'}</h3>
 
         <div className="item-card-footer">
-          <span className={`item-stock-label ${outOfStock ? 'out' : ''}`}>
-            {outOfStock ? 'Out of stock' : `${item.stock} left`}
+          <span className={`item-stock-label ${outOfStock ? 'out' : lowStock ? 'low' : ''}`}>
+            {outOfStock ? 'Out of stock' : `${item.stock} available`}
           </span>
           <button
             className="buy-btn"

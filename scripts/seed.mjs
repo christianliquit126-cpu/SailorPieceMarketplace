@@ -1,0 +1,151 @@
+import { initializeApp } from 'firebase/app'
+import { getDatabase, ref, set } from 'firebase/database'
+
+const firebaseConfig = {
+  apiKey: process.env.VITE_FIREBASE_API_KEY,
+  authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: process.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.VITE_FIREBASE_APP_ID,
+}
+
+const app = initializeApp(firebaseConfig)
+const db = getDatabase(app)
+
+const items = {
+  // ── SECRET ─────────────────────────────────────────────────────
+  cosmetic_crate:         { name: 'Cosmetic Crate',       category: 'Secret',    rarity: 'Divine',    price: 500000,  stock: 30 },
+  aura_crate:             { name: 'Aura Crate',           category: 'Secret',    rarity: 'Divine',    price: 750000,  stock: 72 },
+
+  // ── MYTHICAL ───────────────────────────────────────────────────
+  phantasm_core:          { name: 'Phantasm Core',        category: 'Mythical',  rarity: 'Mythical',  price: 250000,  stock: 5 },
+  pink_gem:               { name: 'Pink Gem',             category: 'Mythical',  rarity: 'Mythical',  price: 180000,  stock: 4 },
+  soul_flame:             { name: 'Soul Flame',           category: 'Mythical',  rarity: 'Mythical',  price: 300000,  stock: 1 },
+  hogyoku_fragment:       { name: 'Hōgyoku Fragment',     category: 'Mythical',  rarity: 'Mythical',  price: 12000,   stock: 155 },
+  conqueror_fragment:     { name: 'Conqueror Fragment',   category: 'Mythical',  rarity: 'Mythical',  price: 8000,    stock: 18984 },
+  crimson_heart:          { name: 'Crimson Heart',        category: 'Mythical',  rarity: 'Mythical',  price: 15000,   stock: 861 },
+  corrupt_crown:          { name: 'Corrupt Crown',        category: 'Mythical',  rarity: 'Mythical',  price: 50000,   stock: 35 },
+  blood_ring:             { name: 'Blood Ring',           category: 'Mythical',  rarity: 'Mythical',  price: 20000,   stock: 95 },
+  transmutation_shard:    { name: 'Transmutation Shard',  category: 'Mythical',  rarity: 'Mythical',  price: 10000,   stock: 353 },
+  shadow_heart:           { name: 'Shadow Heart',         category: 'Mythical',  rarity: 'Mythical',  price: 14000,   stock: 388 },
+  casull:                 { name: 'Casull',               category: 'Mythical',  rarity: 'Mythical',  price: 18000,   stock: 103 },
+  slime_core:             { name: 'Slime Core',           category: 'Mythical',  rarity: 'Mythical',  price: 80000,   stock: 5 },
+  celestial_mark:         { name: 'Celestial Mark',       category: 'Mythical',  rarity: 'Mythical',  price: 60000,   stock: 12 },
+  transcendent_core:      { name: 'Transcendent Core',    category: 'Mythical',  rarity: 'Mythical',  price: 22000,   stock: 136 },
+  diamond:                { name: 'Diamond',              category: 'Mythical',  rarity: 'Mythical',  price: 5000,    stock: 11429 },
+  azure_heart:            { name: 'Azure Heart',          category: 'Mythical',  rarity: 'Mythical',  price: 35000,   stock: 20 },
+  kamish_dagger:          { name: 'Kamish Dagger',        category: 'Mythical',  rarity: 'Mythical',  price: 45000,   stock: 16 },
+  aero_core:              { name: 'Aero Core',            category: 'Mythical',  rarity: 'Mythical',  price: 90000,   stock: 3 },
+  evolution_fragment:     { name: 'Evolution Fragment',   category: 'Mythical',  rarity: 'Mythical',  price: 16000,   stock: 85 },
+  shadow_crystal:         { name: 'Shadow Crystal',       category: 'Mythical',  rarity: 'Mythical',  price: 40000,   stock: 17 },
+  cursed_flesh:           { name: 'Cursed Flesh',         category: 'Mythical',  rarity: 'Mythical',  price: 120000,  stock: 2 },
+  corruption_core:        { name: 'Corruption Core',      category: 'Mythical',  rarity: 'Mythical',  price: 30000,   stock: 33 },
+  mythical_chest:         { name: 'Mythical Chest',       category: 'Mythical',  rarity: 'Mythical',  price: 25000,   stock: 553 },
+  infinity_essence:       { name: 'Infinity Essence',     category: 'Mythical',  rarity: 'Mythical',  price: 500000,  stock: 1 },
+  imperial_mark:          { name: 'Imperial Mark',        category: 'Mythical',  rarity: 'Mythical',  price: 400000,  stock: 1 },
+  imperial_seal:          { name: 'Imperial Seal',        category: 'Mythical',  rarity: 'Mythical',  price: 150000,  stock: 8 },
+  destruction_eye:        { name: 'Destruction Eye',      category: 'Mythical',  rarity: 'Mythical',  price: 200000,  stock: 3 },
+  adamantite:             { name: 'Adamantite',           category: 'Mythical',  rarity: 'Mythical',  price: 3000,    stock: 39569 },
+  drop_product_2x:        { name: '2xDrop Product',       category: 'Mythical',  rarity: 'Mythical',  price: 350000,  stock: 1 },
+
+  // ── LEGENDARY ──────────────────────────────────────────────────
+  tempest_seal:           { name: 'Tempest Seal',         category: 'Legendary', rarity: 'Legendary', price: 8000,    stock: 42 },
+  jade_tablet:            { name: 'Jade Tablet',          category: 'Legendary', rarity: 'Legendary', price: 50000,   stock: 3 },
+  sacred_bow:             { name: 'Sacred Bow',           category: 'Legendary', rarity: 'Legendary', price: 12000,   stock: 24 },
+  void_seed:              { name: 'Void Seed',            category: 'Legendary', rarity: 'Legendary', price: 80000,   stock: 2 },
+  shadow_essence:         { name: 'Shadow Essence',       category: 'Legendary', rarity: 'Legendary', price: 40000,   stock: 3 },
+  dark_ring:              { name: 'Dark Ring',            category: 'Legendary', rarity: 'Legendary', price: 5000,    stock: 340 },
+  cursed_talisman:        { name: 'Cursed Talisman',      category: 'Legendary', rarity: 'Legendary', price: 4000,    stock: 400 },
+  ancient_shard:          { name: 'Ancient Shard',        category: 'Legendary', rarity: 'Legendary', price: 9000,    stock: 45 },
+  slime_remnant:          { name: 'Slime Remnant',        category: 'Legendary', rarity: 'Legendary', price: 30000,   stock: 5 },
+  tempest_relic:          { name: 'Tempest Relic',        category: 'Legendary', rarity: 'Legendary', price: 2000,    stock: 12847 },
+  radiant_core:           { name: 'Radiant Core',         category: 'Legendary', rarity: 'Legendary', price: 15000,   stock: 13 },
+  rush_key:               { name: 'Rush Key',             category: 'Legendary', rarity: 'Legendary', price: 1500,    stock: 16547 },
+  monarch_essence:        { name: 'Monarch Essence',      category: 'Legendary', rarity: 'Legendary', price: 10000,   stock: 41 },
+  reiatsu_core:           { name: 'Reiatsu Core',         category: 'Legendary', rarity: 'Legendary', price: 6000,    stock: 369 },
+  six_eye:                { name: 'Six Eye',              category: 'Legendary', rarity: 'Legendary', price: 20000,   stock: 19 },
+  demonic_shard:          { name: 'Demonic Shard',        category: 'Legendary', rarity: 'Legendary', price: 18000,   stock: 11 },
+  divinity_essence:       { name: 'Divinity Essence',     category: 'Legendary', rarity: 'Legendary', price: 7000,    stock: 342 },
+  legendary_chest:        { name: 'Legendary Chest',      category: 'Legendary', rarity: 'Legendary', price: 5000,    stock: 1705 },
+  gale_essence:           { name: 'Gale Essence',         category: 'Legendary', rarity: 'Legendary', price: 8500,    stock: 40 },
+  fusion_ring:            { name: 'Fusion Ring',          category: 'Legendary', rarity: 'Legendary', price: 3500,    stock: 1060 },
+  energy_shard:           { name: 'Energy Shard',         category: 'Legendary', rarity: 'Legendary', price: 4500,    stock: 400 },
+  clan_reroll:            { name: 'Clan Reroll',          category: 'Legendary', rarity: 'Legendary', price: 1000,    stock: 36087 },
+  divine_grail:           { name: 'Divine Grail',         category: 'Legendary', rarity: 'Legendary', price: 500000,  stock: 1 },
+  silent_storm:           { name: 'Silent Storm',         category: 'Legendary', rarity: 'Legendary', price: 25000,   stock: 32 },
+  dark_grail:             { name: 'Dark Grail',           category: 'Legendary', rarity: 'Legendary', price: 2500,    stock: 13786 },
+  passive_shard:          { name: 'Passive Shard',        category: 'Legendary', rarity: 'Legendary', price: 800,     stock: 32760 },
+  chrysalis_sigil:        { name: 'Chrysalis Sigil',      category: 'Legendary', rarity: 'Legendary', price: 1200,    stock: 5532 },
+  yamato_essence:         { name: 'Yamato Essence',       category: 'Legendary', rarity: 'Legendary', price: 11000,   stock: 55 },
+  spiritual_core:         { name: 'Spiritual Core',       category: 'Legendary', rarity: 'Legendary', price: 14000,   stock: 16 },
+  divergent_pulse:        { name: 'Divergent Pulse',      category: 'Legendary', rarity: 'Legendary', price: 3000,    stock: 1543 },
+  golden_essence:         { name: 'Golden Essence',       category: 'Legendary', rarity: 'Legendary', price: 60000,   stock: 4 },
+  soul_amulet:            { name: 'Soul Amulet',          category: 'Legendary', rarity: 'Legendary', price: 5500,    stock: 403 },
+  alter_essence:          { name: 'Alter Essence',        category: 'Legendary', rarity: 'Legendary', price: 7500,    stock: 188 },
+  blue_singularity:       { name: 'Blue Singularity',     category: 'Legendary', rarity: 'Legendary', price: 300000,  stock: 1 },
+  dismantle_fang:         { name: 'Dismantle Fang',       category: 'Legendary', rarity: 'Legendary', price: 4000,    stock: 974 },
+  infinity_core:          { name: 'Infinity Core',        category: 'Legendary', rarity: 'Legendary', price: 3500,    stock: 1181 },
+  mythril:                { name: 'Mythril',              category: 'Legendary', rarity: 'Legendary', price: 500,     stock: 256433 },
+  calamity_seal:          { name: 'Calamity Seal',        category: 'Legendary', rarity: 'Legendary', price: 900,     stock: 27283 },
+
+  // ── EPIC ───────────────────────────────────────────────────────
+  obsidian:               { name: 'Obsidian',             category: 'Epic',      rarity: 'Epic',      price: 150,     stock: 496460 },
+  epic_chest:             { name: 'Epic Chest',           category: 'Epic',      rarity: 'Epic',      price: 800,     stock: 43435 },
+  void_fragment:          { name: 'Void Fragment',        category: 'Epic',      rarity: 'Epic',      price: 2000,    stock: 2314 },
+  slime_shard:            { name: 'Slime Shard',          category: 'Epic',      rarity: 'Epic',      price: 3000,    stock: 1000 },
+  sage_pulse:             { name: 'Sage Pulse',           category: 'Epic',      rarity: 'Epic',      price: 5000,    stock: 128 },
+  trait_reroll:           { name: 'Trait Reroll',         category: 'Epic',      rarity: 'Epic',      price: 250,     stock: 250641 },
+  dungeon_token:          { name: 'Dungeon Token',        category: 'Epic',      rarity: 'Epic',      price: 1500,    stock: 1121 },
+  morgan_remnant:         { name: 'Morgan Remnant',       category: 'Epic',      rarity: 'Epic',      price: 1200,    stock: 462 },
+  monarch_core:           { name: 'Monarch Core',         category: 'Epic',      rarity: 'Epic',      price: 6000,    stock: 103 },
+  reversal_pulse:         { name: 'Reversal Pulse',       category: 'Epic',      rarity: 'Epic',      price: 4500,    stock: 58 },
+  slime_key:              { name: 'Slime Key',            category: 'Epic',      rarity: 'Epic',      price: 2500,    stock: 226 },
+  demonic_fragment:       { name: 'Demonic Fragment',     category: 'Epic',      rarity: 'Epic',      price: 3500,    stock: 18 },
+  mirage_pendant:         { name: 'Mirage Pendant',       category: 'Epic',      rarity: 'Epic',      price: 1800,    stock: 2412 },
+  divine_fragment:        { name: 'Divine Fragment',      category: 'Epic',      rarity: 'Epic',      price: 4000,    stock: 32 },
+  limitless_key:          { name: 'Limitless Key',        category: 'Epic',      rarity: 'Epic',      price: 2200,    stock: 500 },
+  flash_impact:           { name: 'Flash Impact',         category: 'Epic',      rarity: 'Epic',      price: 1600,    stock: 1177 },
+  cursed_finger:          { name: 'Cursed Finger',        category: 'Epic',      rarity: 'Epic',      price: 1400,    stock: 2343 },
+  throne_remnant:         { name: 'Throne Remnant',       category: 'Epic',      rarity: 'Epic',      price: 3800,    stock: 81 },
+  broken_sword:           { name: 'Broken Sword',         category: 'Epic',      rarity: 'Epic',      price: 600,     stock: 17187 },
+  limitless_ring:         { name: 'Limitless Ring',       category: 'Epic',      rarity: 'Epic',      price: 2800,    stock: 1037 },
+  illusion_prism:         { name: 'Illusion Prism',       category: 'Epic',      rarity: 'Epic',      price: 2000,    stock: 1026 },
+  malevolent_key:         { name: 'Malevolent Key',       category: 'Epic',      rarity: 'Epic',      price: 2000,    stock: 500 },
+  tide_remnant:           { name: 'Tide Remnant',         category: 'Epic',      rarity: 'Epic',      price: 3200,    stock: 93 },
+  race_reroll:            { name: 'Race Reroll',          category: 'Epic',      rarity: 'Epic',      price: 200,     stock: 370290 },
+  rush_coin:              { name: 'Rush Coin',            category: 'Epic',      rarity: 'Epic',      price: 5500,    stock: 81 },
+  awakened_cursed_finger: { name: 'Awakened Cursed Finger', category: 'Epic',   rarity: 'Epic',      price: 8000,    stock: 63 },
+  boss_key:               { name: 'Boss Key',             category: 'Epic',      rarity: 'Epic',      price: 400,     stock: 79012 },
+  vessel_ring:            { name: 'Vessel Ring',          category: 'Epic',      rarity: 'Epic',      price: 7000,    stock: 10 },
+  soul_fragment:          { name: 'Soul Fragment',        category: 'Epic',      rarity: 'Epic',      price: 2600,    stock: 33 },
+  abyss_edge:             { name: 'Abyss Edge',           category: 'Epic',      rarity: 'Epic',      price: 1700,    stock: 816 },
+  umbral_capsule:         { name: 'Umbral Capsule',       category: 'Epic',      rarity: 'Epic',      price: 12000,   stock: 2 },
+  heart:                  { name: 'Heart',                category: 'Epic',      rarity: 'Epic',      price: 9000,    stock: 21 },
+  dungeon_key:            { name: 'Dungeon Key',          category: 'Epic',      rarity: 'Epic',      price: 300,     stock: 129598 },
+  boss_ticket:            { name: 'Boss Ticket',          category: 'Epic',      rarity: 'Epic',      price: 700,     stock: 8815 },
+  frozen_will:            { name: 'Frozen Will',          category: 'Epic',      rarity: 'Epic',      price: 4200,    stock: 104 },
+  worthiness_fragment:    { name: 'Worthiness Fragment',  category: 'Epic',      rarity: 'Epic',      price: 3600,    stock: 66 },
+
+  // ── RARE ───────────────────────────────────────────────────────
+  energy_core:            { name: 'Energy Core',          category: 'Rare',      rarity: 'Rare',      price: 500,     stock: 2594 },
+  rare_chest:             { name: 'Rare Chest',           category: 'Rare',      rarity: 'Rare',      price: 200,     stock: 96363 },
+  haki_color_reroll:      { name: 'Haki Color Reroll',    category: 'Rare',      rarity: 'Rare',      price: 100,     stock: 490338 },
+  iron:                   { name: 'Iron',                 category: 'Rare',      rarity: 'Rare',      price: 50,      stock: 981698 },
+
+  // ── COMMON ─────────────────────────────────────────────────────
+  wood:                   { name: 'Wood',                 category: 'Common',    rarity: 'Common',    price: 10,      stock: 2942502 },
+  common_chest:           { name: 'Common Chest',         category: 'Common',    rarity: 'Common',    price: 50,      stock: 202906 },
+}
+
+console.log(`Seeding ${Object.keys(items).length} items to Firebase...`)
+
+try {
+  await set(ref(db, 'items'), items)
+  console.log(`✅ Done! ${Object.keys(items).length} items written to Firebase.`)
+  process.exit(0)
+} catch (err) {
+  console.error('❌ Error:', err.message)
+  process.exit(1)
+}

@@ -1,0 +1,143 @@
+.sell-page {
+  min-height: 80vh;
+  padding-bottom: 60px;
+}
+
+.sell-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 32px 0;
+  margin-bottom: 40px;
+}
+
+.sell-header h1 {
+  font-size: 2rem;
+  margin-bottom: 4px;
+}
+
+.sell-header p {
+  color: var(--text-light);
+}
+
+.sell-form {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 36px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  max-width: 700px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  flex: 1;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  background: var(--white);
+  color: var(--text);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--primary);
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.submit-btn {
+  background: var(--primary);
+  color: var(--white);
+  border: none;
+  padding: 14px 36px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  transition: background 0.2s;
+  width: 100%;
+}
+
+.submit-btn:hover {
+  background: var(--primary-dark);
+}
+
+.success-box {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 60px 40px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  max-width: 500px;
+  margin: 60px auto;
+}
+
+.success-icon {
+  width: 64px;
+  height: 64px;
+  background: #27ae60;
+  color: var(--white);
+  border-radius: 50%;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.success-box h2 {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+.success-box p {
+  color: var(--text-light);
+  margin-bottom: 28px;
+}
+
+.reset-btn {
+  background: var(--primary);
+  color: var(--white);
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.reset-btn:hover {
+  background: var(--primary-dark);
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}

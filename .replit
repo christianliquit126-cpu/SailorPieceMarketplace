@@ -37,3 +37,15 @@ externalPort = 80
 deploymentTarget = "static"
 build = ["npm", "run", "build"]
 publicDir = "dist"
+
+[userenv]
+
+[userenv.shared]
+VITE_FIREBASE_API_KEY = "AIzaSyBaEZp1SaIqU5kdSAPsBnh-5UbEyCKhsgg"
+VITE_FIREBASE_AUTH_DOMAIN = "fir-console-a5e12.firebaseapp.com"
+VITE_FIREBASE_DATABASE_URL = "https://fir-console-a5e12-default-rtdb.asia-southeast1.firebasedatabase.app"
+VITE_FIREBASE_PROJECT_ID = "fir-console-a5e12"
+VITE_FIREBASE_STORAGE_BUCKET = "fir-console-a5e12.firebasestorage.app"
+VITE_FIREBASE_MESSAGING_SENDER_ID = "373306163178"
+VITE_FIREBASE_APP_ID = "1:373306163178:web:148f216771d6ffec44fc93"
+VITE_FIREBASE_MEASUREMENT_ID = "G-7KFLKZZWD8"

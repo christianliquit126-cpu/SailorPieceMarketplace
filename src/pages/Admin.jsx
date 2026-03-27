@@ -106,10 +106,17 @@ function OrdersTab() {
     finally { setUpdating(null) }
   }
 
-  // Filter by status tab, then by search query
+  // Filter by status tab, then by search query (item name, buyer name, or Roblox username)
   const byStatus = filterStatus === 'all' ? orders : orders.filter(o => o.status === filterStatus)
   const filtered = search
-    ? byStatus.filter(o => (o.itemName || '').toLowerCase().includes(search.toLowerCase()))
+    ? byStatus.filter(o => {
+        const q = search.toLowerCase()
+        return (
+          (o.itemName       || '').toLowerCase().includes(q) ||
+          (o.buyerName      || '').toLowerCase().includes(q) ||
+          (o.robloxUsername || '').toLowerCase().includes(q)
+        )
+      })
     : byStatus
 
   const stats = {
@@ -162,7 +169,7 @@ function OrdersTab() {
         </div>
         <input
           className="items-search"
-          placeholder="Search by item name…"
+          placeholder="Search by item, buyer or Roblox username…"
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
@@ -184,6 +191,7 @@ function OrdersTab() {
             <thead>
               <tr>
                 <th>Order ID</th>
+                <th>Buyer</th>
                 <th>Item</th>
                 <th>Qty</th>
                 <th>Date</th>
@@ -195,6 +203,10 @@ function OrdersTab() {
               {filtered.map(o => (
                 <tr key={o._id} className="order-row animate-fade-in">
                   <td className="order-id">#{o._id.slice(-6).toUpperCase()}</td>
+                  <td className="order-buyer-cell">
+                    <span className="order-buyer-name">{o.buyerName || '—'}</span>
+                    <span className="order-roblox">{o.robloxUsername ? `@${o.robloxUsername}` : ''}</span>
+                  </td>
                   <td className="order-item-cell">
                     <span className="order-item-name">{o.itemName || 'Unknown'}</span>
                     {o.rarity && (

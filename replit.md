@@ -48,8 +48,21 @@ orders/
 
 ## Pages
 
-- **`/`** — Marketplace: real-time item grid with search, category & rarity filters, buy modal
-- **`/admin`** — Admin dashboard: live order table with status management and revenue stats
+- **`/`** — Marketplace: real-time item grid with search, category & rarity filters, buy modal (price hidden from cards)
+- **`/admin`** — Admin dashboard: password-protected (password: `xyruu2005`), live order table with status management and revenue stats
+
+## Security
+
+- Admin panel requires password entry before any dashboard content is shown
+- Successful login is stored in `sessionStorage` (persists through page refresh, clears when tab is closed)
+- Logout button in the admin header clears the session immediately
+
+## Features
+
+- **Click sound**: Web Audio API generates a soft click sound every time an item card is clicked
+- **Discord notifications**: When a purchase is confirmed, an automatic message is sent to the configured Discord webhook with the item name, rarity, category, quantity, and a note to check the admin panel
+- **Price hidden from store**: Item cards no longer display the price; only stock count is shown
+- Discord webhook URL is configured in `src/components/BuyModal.jsx`
 
 ## Project Structure
 

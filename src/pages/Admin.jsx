@@ -4,6 +4,7 @@ import { db } from '../firebase'
 import { ALL_ITEMS } from '../data/allItems'
 import './Admin.css'
 
+// ─── CONSTANTS ────────────────────────────────────────────────────────────────
 const STATUS_OPTIONS = ['pending', 'processing', 'completed', 'cancelled']
 const RARITIES = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythical', 'Divine']
 const STATUS_COLORS = {
@@ -12,15 +13,72 @@ const STATUS_COLORS = {
   completed:  { bg: 'rgba(16,185,129,0.12)',  color: '#10b981',  border: 'rgba(16,185,129,0.3)'  },
   cancelled:  { bg: 'rgba(239,68,68,0.12)',   color: '#ef4444',  border: 'rgba(239,68,68,0.3)'   },
 }
-
 const EMPTY_FORM = { name: '', category: '', rarity: 'Common', price: '', stock: '', image: '' }
 
+// The correct admin password — only authorized users can proceed past this
+const ADMIN_PASSWORD = 'xyruu2005'
+
+// Session storage key used to remember the login state for this browser tab
+const SESSION_KEY = 'sp_admin_auth'
+
+// ─── STATUS BADGE ─────────────────────────────────────────────────────────────
 function StatusBadge({ status }) {
   const s = STATUS_COLORS[status] || STATUS_COLORS.pending
   return (
     <span className="status-badge" style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}` }}>
       {status}
     </span>
+  )
+}
+
+// ─── ADMIN LOGIN SCREEN ───────────────────────────────────────────────────────
+// Shows a password prompt. If the correct password is entered, the admin panel
+// is unlocked for the duration of the session (until the tab is closed or logout).
+function AdminLogin({ onSuccess }) {
+  const [pw, setPw] = useState('')
+  const [error, setError] = useState(null)
+  const [shake, setShake] = useState(false)
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (pw === ADMIN_PASSWORD) {
+      // Save the auth flag in sessionStorage so refreshing the page keeps the user logged in
+      sessionStorage.setItem(SESSION_KEY, '1')
+      onSuccess()
+    } else {
+      // Wrong password — show error and animate the box
+      setError('Incorrect password. Please try again.')
+      setShake(true)
+      setTimeout(() => setShake(false), 600)
+      setPw('')
+    }
+  }
+
+  return (
+    <div className="login-backdrop">
+      <form className={`login-box ${shake ? 'shake' : ''}`} onSubmit={handleSubmit}>
+        <div className="login-icon">🔒</div>
+        <h2 className="login-title">Admin Access</h2>
+        <p className="login-sub">Enter the password to continue to the dashboard.</p>
+
+        <div className="login-field">
+          <input
+            type="password"
+            className="login-input"
+            placeholder="Password"
+            value={pw}
+            onChange={e => { setPw(e.target.value); setError(null) }}
+            autoFocus
+          />
+        </div>
+
+        {error && <p className="login-error">{error}</p>}
+
+        <button type="submit" className="btn-primary login-btn">
+          Unlock Panel
+        </button>
+      </form>
+    </div>
   )
 }
 
@@ -32,6 +90,7 @@ function OrdersTab() {
   const [filterStatus, setFilterStatus] = useState('all')
   const [updating, setUpdating] = useState(null)
 
+  // Subscribe to real-time order updates from Firebase
   useEffect(() => {
     const r = ref(db, 'orders')
     onValue(r, snap => {
@@ -46,6 +105,7 @@ function OrdersTab() {
     return () => off(r)
   }, [])
 
+  // Update the status of a single order in Firebase
   const handleStatus = async (id, val) => {
     setUpdating(id)
     try { await update(ref(db, `orders/${id}`), { status: val }) }
@@ -129,6 +189,7 @@ function OrdersTab() {
 }
 
 // ─── ITEM FORM ────────────────────────────────────────────────────────────────
+// Shared form used for both adding a new item and editing an existing one
 function ItemForm({ initial = EMPTY_FORM, onSave, onCancel, saving }) {
   const [form, setForm] = useState(initial)
   const set_ = (k, v) => setForm(f => ({ ...f, [k]: v }))
@@ -187,6 +248,7 @@ function ItemsTab() {
   const [seedMsg, setSeedMsg] = useState(null)
   const [search, setSearch] = useState('')
 
+  // Subscribe to real-time item updates from Firebase
   useEffect(() => {
     const r = ref(db, 'items')
     onValue(r, snap => {
@@ -199,6 +261,7 @@ function ItemsTab() {
     return () => off(r)
   }, [])
 
+  // Add a brand-new item to Firebase
   const handleAdd = async (form) => {
     setSaving(true)
     try {
@@ -212,6 +275,7 @@ function ItemsTab() {
     finally { setSaving(false) }
   }
 
+  // Update an existing item in Firebase
   const handleEdit = async (form) => {
     setSaving(true)
     try {
@@ -225,6 +289,7 @@ function ItemsTab() {
     finally { setSaving(false) }
   }
 
+  // Remove an item from Firebase after confirmation
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this item?')) return
     setDeleting(id)
@@ -233,6 +298,7 @@ function ItemsTab() {
     finally { setDeleting(null) }
   }
 
+  // Bulk-import all items from the local allItems.js data file
   const handleSeedAll = async () => {
     if (!window.confirm(`This will import all ${Object.keys(ALL_ITEMS).length} items from your inventory. Existing items with the same keys will be overwritten. Continue?`)) return
     setSeeding(true); setSeedMsg(null)
@@ -251,18 +317,14 @@ function ItemsTab() {
 
   if (editItem) return (
     <div>
-      <div className="section-head">
-        <h2 className="section-title">Edit Item</h2>
-      </div>
+      <div className="section-head"><h2 className="section-title">Edit Item</h2></div>
       <ItemForm initial={{ name: editItem.name, category: editItem.category, rarity: editItem.rarity, price: editItem.price, stock: editItem.stock, image: editItem.image || '' }} onSave={handleEdit} onCancel={() => setEditItem(null)} saving={saving} />
     </div>
   )
 
   if (showForm) return (
     <div>
-      <div className="section-head">
-        <h2 className="section-title">Add New Item</h2>
-      </div>
+      <div className="section-head"><h2 className="section-title">Add New Item</h2></div>
       <ItemForm onSave={handleAdd} onCancel={() => setShowForm(false)} saving={saving} />
     </div>
   )
@@ -344,8 +406,24 @@ function ItemsTab() {
 }
 
 // ─── MAIN ADMIN ───────────────────────────────────────────────────────────────
+// Entry point for the admin route. Checks sessionStorage for existing auth,
+// shows the login screen if not authenticated, or the full dashboard if logged in.
 export default function Admin() {
   const [tab, setTab] = useState('items')
+
+  // Check if the user already authenticated during this browser session
+  const [authed, setAuthed] = useState(() => sessionStorage.getItem(SESSION_KEY) === '1')
+
+  // Called when the user logs out — clears session and returns to login screen
+  const handleLogout = () => {
+    sessionStorage.removeItem(SESSION_KEY)
+    setAuthed(false)
+  }
+
+  // Show the password screen if the user is not authenticated
+  if (!authed) {
+    return <AdminLogin onSuccess={() => setAuthed(true)} />
+  }
 
   return (
     <div className="admin-page">
@@ -355,7 +433,11 @@ export default function Admin() {
             <p className="admin-eyebrow">Sailor Piece · Dashboard</p>
             <h1 className="admin-title">Admin <span className="glow-text">Panel</span></h1>
           </div>
-          <div className="admin-live-badge"><span className="status-dot-sm" />Real-time</div>
+          <div className="admin-header-right">
+            <div className="admin-live-badge"><span className="status-dot-sm" />Real-time</div>
+            {/* Logout button — clears session and shows login screen again */}
+            <button className="logout-btn" onClick={handleLogout}>🔓 Logout</button>
+          </div>
         </div>
 
         <div className="admin-tabs">

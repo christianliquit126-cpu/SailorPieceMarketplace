@@ -1,61 +1,41 @@
 import { useState } from 'react'
 import './ItemCard.css'
 
-// ─── CLICK SOUND ──────────────────────────────────────────────────────────────
-// Uses the Web Audio API to generate a short tap sound on each card click.
-// No external audio files needed — all generated in the browser.
 function playClickSound() {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    const ctx  = new (window.AudioContext || window.webkitAudioContext)()
     const osc  = ctx.createOscillator()
     const gain = ctx.createGain()
-
     osc.connect(gain)
     gain.connect(ctx.destination)
-
     osc.type = 'sine'
-    osc.frequency.setValueAtTime(800, ctx.currentTime)
-    osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.08)
-
-    gain.gain.setValueAtTime(0.25, ctx.currentTime)
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08)
-
+    osc.frequency.setValueAtTime(700, ctx.currentTime)
+    osc.frequency.exponentialRampToValueAtTime(350, ctx.currentTime + 0.07)
+    gain.gain.setValueAtTime(0.2, ctx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07)
     osc.start(ctx.currentTime)
-    osc.stop(ctx.currentTime + 0.08)
-  } catch (e) {
-    // Silently ignore — Web Audio API may not be available in all environments
-  }
+    osc.stop(ctx.currentTime + 0.07)
+  } catch (e) {}
 }
 
-// ─── ITEM CARD ────────────────────────────────────────────────────────────────
-// Displays a single store item. Clicking the card plays a sound.
-// Clicking "Buy Now" opens the purchase modal.
 export default function ItemCard({ item, onBuy }) {
   const [imgError, setImgError] = useState(false)
   const outOfStock = !item.stock || item.stock <= 0
 
-  // Play sound on card click (but not on button click — that's handled separately)
-  const handleCardClick = () => {
-    playClickSound()
-  }
-
-  // Play sound then open the buy modal
   const handleBuyClick = (e) => {
-    e.stopPropagation() // prevent bubbling up to the card handler
+    e.stopPropagation()
     playClickSound()
     onBuy(item)
   }
 
   return (
-    <div
-      className={`item-card ${outOfStock ? 'out-of-stock' : ''}`}
-      onClick={handleCardClick}
-    >
-      {/* ── Item image ── */}
+    <div className={`item-card ${outOfStock ? 'out-of-stock' : ''} animate-fade-in`}>
+
+      {/* Image area */}
       <div className="item-image-wrap">
         {imgError || !item.image ? (
           <div className="item-image-fallback">
-            <span className="ci ci-card" />
+            <span className="ci ci-card fallback-icon" />
           </div>
         ) : (
           <img
@@ -69,25 +49,23 @@ export default function ItemCard({ item, onBuy }) {
         {outOfStock && <div className="sold-out-overlay">SOLD OUT</div>}
       </div>
 
-      {/* ── Item details ── */}
+      {/* Card body */}
       <div className="item-card-body">
         <p className="item-category">{item.category || 'Uncategorized'}</p>
         <h3 className="item-name">{item.name || 'Unknown Item'}</h3>
 
-        {/* Stock indicator — no price shown */}
-        <div className="item-footer">
-          <span className={`item-stock ${outOfStock ? 'stock-zero' : ''}`}>
+        <div className="item-card-footer">
+          <span className={`item-stock-label ${outOfStock ? 'out' : ''}`}>
             {outOfStock ? 'Out of stock' : `${item.stock} left`}
           </span>
+          <button
+            className="buy-btn"
+            disabled={outOfStock}
+            onClick={handleBuyClick}
+          >
+            {outOfStock ? 'Sold Out' : 'Buy Now'}
+          </button>
         </div>
-
-        <button
-          className="btn-primary buy-btn"
-          disabled={outOfStock}
-          onClick={handleBuyClick}
-        >
-          {outOfStock ? 'Unavailable' : 'Buy Now'}
-        </button>
       </div>
     </div>
   )

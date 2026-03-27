@@ -5,7 +5,6 @@ import ItemCard from '../components/ItemCard'
 import BuyModal from '../components/BuyModal'
 import './Marketplace.css'
 
-// Fixed category list — must match what the admin panel uses.
 const CATEGORIES = ['Specs Set', 'Materials', 'Chest', 'Key']
 
 export default function Marketplace() {
@@ -16,7 +15,6 @@ export default function Marketplace() {
   const [category, setCategory] = useState('All')
   const [buyItem, setBuyItem] = useState(null)
 
-  // Subscribe to real-time item updates from Firebase
   useEffect(() => {
     const itemsRef = ref(db, 'items')
     const unsub = onValue(
@@ -40,7 +38,6 @@ export default function Marketplace() {
     return () => off(itemsRef)
   }, [])
 
-  // Filter items by category and search query
   const filtered = useMemo(() => {
     return items.filter(item => {
       if (category !== 'All' && item.category !== category) return false
@@ -56,116 +53,86 @@ export default function Marketplace() {
   }, [items, category, search])
 
   const hasFilters = search || category !== 'All'
+  const inStockCount = items.filter(i => i.stock > 0).length
 
   return (
     <div className="marketplace">
 
-      {/* ── Hero banner ── */}
-      <header className="market-hero">
-        <div className="container">
-          <div className="hero-left">
-            <p className="hero-eyebrow">Sailor Piece · Roblox</p>
-            <h1 className="hero-title">
-              Item <span className="glow-text">Marketplace</span>
-            </h1>
-            <p className="hero-desc">
-              Browse and purchase items for your adventure. All inventory updates in real-time.
-            </p>
+      {/* ── Page header ── */}
+      <div className="market-header">
+        <div className="market-header-left">
+          <h1 className="market-title">Marketplace</h1>
+          <span className="market-subtitle">SailorPiece · Roblox</span>
+        </div>
+        <div className="market-header-stats">
+          <div className="header-stat">
+            <span className="header-stat-n">{items.length}</span>
+            <span className="header-stat-l">Items</span>
           </div>
-          <div className="hero-stats">
-            <div className="stat-pill">
-              <span className="stat-n">{items.length}</span>
-              <span className="stat-l">Total Items</span>
-            </div>
-            <div className="stat-pill">
-              <span className="stat-n">{items.filter(i => i.stock > 0).length}</span>
-              <span className="stat-l">In Stock</span>
-            </div>
+          <div className="header-stat">
+            <span className="header-stat-n">{inStockCount}</span>
+            <span className="header-stat-l">In Stock</span>
           </div>
         </div>
-      </header>
+      </div>
 
-      <div className="container market-body">
+      {/* ── Search bar ── */}
+      <div className="search-bar-wrap">
+        <span className="ci ci-search search-bar-icon" />
+        <input
+          type="text"
+          className="search-bar-input"
+          placeholder="Search the Marketplace…"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
+        {search && (
+          <button className="search-bar-clear" onClick={() => setSearch('')}>
+            Clear
+          </button>
+        )}
+      </div>
 
-        {/* ── Sidebar filters ── */}
-        <aside className="market-sidebar">
+      {/* ── Main layout: grid + filter panel ── */}
+      <div className="market-body">
 
-          {/* Search */}
-          <div className="sidebar-section">
-            <label className="sidebar-label">Search</label>
-            <div className="search-wrap">
-              <span className="search-icon ci ci-search" />
-              <input
-                type="text"
-                className="search-input"
-                placeholder="Search items..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-              />
-              {search && (
-                <button className="search-clear" onClick={() => setSearch('')}>
-                  <span className="ci ci-close" />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Category filter */}
-          <div className="sidebar-section">
-            <label className="sidebar-label">Category</label>
-            <ul className="filter-list">
-              {['All', ...CATEGORIES].map(cat => (
-                <li key={cat}>
-                  <button
-                    className={`filter-btn ${category === cat ? 'active' : ''}`}
-                    onClick={() => setCategory(cat)}
-                  >
-                    {cat}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-        </aside>
-
-        {/* ── Main grid ── */}
+        {/* Items grid */}
         <main className="market-main">
+          {error && (
+            <div className="error-banner">
+              <span className="ci ci-warn" style={{ marginRight: 8, color: 'var(--red)' }} />
+              {error}
+            </div>
+          )}
+
           <div className="results-bar">
             <span className="results-count">
               {loading ? 'Loading…' : `${filtered.length} item${filtered.length !== 1 ? 's' : ''} found`}
             </span>
             {hasFilters && (
               <button
-                className="clear-filters"
+                className="clear-all-btn"
                 onClick={() => { setSearch(''); setCategory('All') }}
               >
-                Clear filters
+                Clear all
               </button>
             )}
           </div>
 
-          {error && (
-            <div className="error-banner">
-              <span className="ci ci-warn" style={{ color: 'var(--red)', marginRight: 8 }} />
-              {error}
-            </div>
-          )}
-
           {loading ? (
-            <div className="loading-grid">
+            <div className="items-grid">
               {[...Array(8)].map((_, i) => <div key={i} className="skeleton-card" />)}
             </div>
           ) : filtered.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-icon"><span className="css-empty-wave" /></div>
+              <div className="empty-wave-icon" />
               <h3>No items found</h3>
               <p>
                 {items.length === 0
                   ? 'The marketplace is currently empty. Check back soon!'
-                  : 'No items match your current filters.'}
+                  : 'Try a different search or category.'}
               </p>
-              {items.length > 0 && (
+              {hasFilters && (
                 <button
                   className="btn-ghost"
                   onClick={() => { setSearch(''); setCategory('All') }}
@@ -182,9 +149,33 @@ export default function Marketplace() {
             </div>
           )}
         </main>
+
+        {/* ── Right filter panel ── */}
+        <aside className="market-filter-panel">
+          <div className="filter-panel-header">
+            <span className="filter-panel-title">Category filter</span>
+            {category !== 'All' && (
+              <button className="filter-clear-btn" onClick={() => setCategory('All')}>Clear</button>
+            )}
+          </div>
+          <ul className="filter-list">
+            {['All', ...CATEGORIES].map(cat => (
+              <li key={cat}>
+                <button
+                  className={`filter-item ${category === cat ? 'active' : ''}`}
+                  onClick={() => setCategory(cat)}
+                >
+                  <span className="filter-check">
+                    {category === cat && <span className="ci ci-check filter-check-icon" />}
+                  </span>
+                  {cat}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </aside>
       </div>
 
-      {/* ── Buy modal (shown when a card is clicked) ── */}
       {buyItem && (
         <BuyModal item={buyItem} onClose={() => setBuyItem(null)} />
       )}

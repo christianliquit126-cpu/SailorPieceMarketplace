@@ -92,11 +92,21 @@
   border-radius: var(--radius);
   padding: 18px 16px;
   text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
+.admin-stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
 .admin-stat-card.pending    { border-color: rgba(245,158,11,0.25); }
 .admin-stat-card.processing { border-color: rgba(59,130,246,0.25); }
 .admin-stat-card.completed  { border-color: rgba(16,185,129,0.25); }
-.admin-stat-card.revenue    { border-color: rgba(0,212,255,0.25); background: var(--cyan-glow); }
+.admin-stat-card.cancelled  { border-color: rgba(239,68,68,0.25); }
+
+/* Emoji icon shown above the number in each stat card */
+.astat-icon {
+  display: block;
+  font-size: 1.3rem;
+  margin-bottom: 6px;
+  line-height: 1;
+}
 
 .astat-n {
   display: block;
@@ -109,7 +119,7 @@
 .admin-stat-card.pending    .astat-n { color: var(--yellow); }
 .admin-stat-card.processing .astat-n { color: var(--blue); }
 .admin-stat-card.completed  .astat-n { color: var(--green); }
-.admin-stat-card.revenue    .astat-n { color: var(--cyan); }
+.admin-stat-card.cancelled  .astat-n { color: var(--red); }
 
 .astat-l {
   font-size: 0.72rem;
@@ -118,7 +128,17 @@
   letter-spacing: 0.06em;
 }
 
-/* ── FILTERS ── */
+/* ── ORDERS CONTROLS (filter tabs + search bar) ── */
+.orders-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+/* ── FILTERS (kept for filter-tab reuse) ── */
 .admin-filters {
   display: flex;
   align-items: center;
@@ -207,8 +227,9 @@
 .order-item-cell { display: flex; flex-direction: column; gap: 3px; }
 .order-item-name { color: var(--text-primary); font-weight: 500; }
 .order-rarity { font-size: 0.68rem; align-self: flex-start; }
+/* Small category tag shown under the item name in the orders table */
+.order-category { font-size: 0.72rem; color: var(--text-muted); align-self: flex-start; }
 .order-qty { color: var(--text-secondary); font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 600; white-space: nowrap; }
-.order-total { color: var(--cyan); font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 700; white-space: nowrap; }
 .order-date { color: var(--text-muted); font-size: 0.8rem; white-space: nowrap; }
 
 .status-badge {
@@ -336,6 +357,44 @@
   align-items: center;
   gap: 10px;
 }
+
+/* Bold item name in the items table */
+.item-cell-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Muted secondary text in table cells */
+.cell-muted {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+/* Stock indicator pill replacing the plain number */
+.stock-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.stock-pill.stock-in  { background: rgba(16,185,129,0.12); color: var(--green); border: 1px solid rgba(16,185,129,0.25); }
+.stock-pill.stock-out { background: rgba(239,68,68,0.1);   color: var(--red);   border: 1px solid rgba(239,68,68,0.25); }
+
+/* Back navigation button shown on edit / add forms */
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 8px;
+  transition: color 0.15s;
+  display: block;
+}
+.back-btn:hover { color: var(--cyan); }
 
 .item-thumb {
   width: 36px;

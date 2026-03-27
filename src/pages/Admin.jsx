@@ -13,12 +13,12 @@ const STATUS_COLORS = {
   completed:  { bg: 'rgba(16,185,129,0.12)',  color: '#10b981',  border: 'rgba(16,185,129,0.3)'  },
   cancelled:  { bg: 'rgba(239,68,68,0.12)',   color: '#ef4444',  border: 'rgba(239,68,68,0.3)'   },
 }
-const EMPTY_FORM = { name: '', category: '', rarity: 'Common', price: '', stock: '', image: '' }
 
-// The correct admin password — only authorized users can proceed past this
+// Item form default — no price field
+const EMPTY_FORM = { name: '', category: '', rarity: 'Common', stock: '', image: '' }
+
+// Admin password and session key
 const ADMIN_PASSWORD = 'xyruu2005'
-
-// Session storage key used to remember the login state for this browser tab
 const SESSION_KEY = 'sp_admin_auth'
 
 // ─── STATUS BADGE ─────────────────────────────────────────────────────────────
@@ -32,8 +32,7 @@ function StatusBadge({ status }) {
 }
 
 // ─── ADMIN LOGIN SCREEN ───────────────────────────────────────────────────────
-// Shows a password prompt. If the correct password is entered, the admin panel
-// is unlocked for the duration of the session (until the tab is closed or logout).
+// Blocks access to the dashboard until the correct password is entered.
 function AdminLogin({ onSuccess }) {
   const [pw, setPw] = useState('')
   const [error, setError] = useState(null)
@@ -42,11 +41,9 @@ function AdminLogin({ onSuccess }) {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (pw === ADMIN_PASSWORD) {
-      // Save the auth flag in sessionStorage so refreshing the page keeps the user logged in
       sessionStorage.setItem(SESSION_KEY, '1')
       onSuccess()
     } else {
-      // Wrong password — show error and animate the box
       setError('Incorrect password. Please try again.')
       setShake(true)
       setTimeout(() => setShake(false), 600)
@@ -60,7 +57,6 @@ function AdminLogin({ onSuccess }) {
         <div className="login-icon">🔒</div>
         <h2 className="login-title">Admin Access</h2>
         <p className="login-sub">Enter the password to continue to the dashboard.</p>
-
         <div className="login-field">
           <input
             type="password"
@@ -71,12 +67,8 @@ function AdminLogin({ onSuccess }) {
             autoFocus
           />
         </div>
-
         {error && <p className="login-error">{error}</p>}
-
-        <button type="submit" className="btn-primary login-btn">
-          Unlock Panel
-        </button>
+        <button type="submit" className="btn-primary login-btn">Unlock Panel</button>
       </form>
     </div>
   )
@@ -89,6 +81,7 @@ function OrdersTab() {
   const [error, setError] = useState(null)
   const [filterStatus, setFilterStatus] = useState('all')
   const [updating, setUpdating] = useState(null)
+  const [search, setSearch] = useState('')
 
   // Subscribe to real-time order updates from Firebase
   useEffect(() => {
@@ -113,27 +106,53 @@ function OrdersTab() {
     finally { setUpdating(null) }
   }
 
-  const filtered = filterStatus === 'all' ? orders : orders.filter(o => o.status === filterStatus)
+  // Filter by status tab, then by search query
+  const byStatus = filterStatus === 'all' ? orders : orders.filter(o => o.status === filterStatus)
+  const filtered = search
+    ? byStatus.filter(o => (o.itemName || '').toLowerCase().includes(search.toLowerCase()))
+    : byStatus
+
   const stats = {
-    total: orders.length,
-    pending: orders.filter(o => o.status === 'pending').length,
+    total:      orders.length,
+    pending:    orders.filter(o => o.status === 'pending').length,
     processing: orders.filter(o => o.status === 'processing').length,
-    completed: orders.filter(o => o.status === 'completed').length,
+    completed:  orders.filter(o => o.status === 'completed').length,
+    cancelled:  orders.filter(o => o.status === 'cancelled').length,
   }
-  const revenue = orders.filter(o => o.status === 'completed').reduce((a, o) => a + (o.totalPrice || 0), 0)
 
   return (
     <>
+      {/* ── Order stat cards — no revenue shown ── */}
       <div className="admin-stats">
-        <div className="admin-stat-card"><span className="astat-n">{stats.total}</span><span className="astat-l">Total Orders</span></div>
-        <div className="admin-stat-card pending"><span className="astat-n">{stats.pending}</span><span className="astat-l">Pending</span></div>
-        <div className="admin-stat-card processing"><span className="astat-n">{stats.processing}</span><span className="astat-l">Processing</span></div>
-        <div className="admin-stat-card completed"><span className="astat-n">{stats.completed}</span><span className="astat-l">Completed</span></div>
-        <div className="admin-stat-card revenue"><span className="astat-n">💎 {revenue.toLocaleString()}</span><span className="astat-l">Revenue</span></div>
+        <div className="admin-stat-card">
+          <span className="astat-icon">📋</span>
+          <span className="astat-n">{stats.total}</span>
+          <span className="astat-l">Total Orders</span>
+        </div>
+        <div className="admin-stat-card pending">
+          <span className="astat-icon">⏳</span>
+          <span className="astat-n">{stats.pending}</span>
+          <span className="astat-l">Pending</span>
+        </div>
+        <div className="admin-stat-card processing">
+          <span className="astat-icon">⚙️</span>
+          <span className="astat-n">{stats.processing}</span>
+          <span className="astat-l">Processing</span>
+        </div>
+        <div className="admin-stat-card completed">
+          <span className="astat-icon">✅</span>
+          <span className="astat-n">{stats.completed}</span>
+          <span className="astat-l">Completed</span>
+        </div>
+        <div className="admin-stat-card cancelled">
+          <span className="astat-icon">❌</span>
+          <span className="astat-n">{stats.cancelled}</span>
+          <span className="astat-l">Cancelled</span>
+        </div>
       </div>
 
-      <div className="admin-filters">
-        <span className="filter-label">Status</span>
+      {/* ── Status filter tabs + search ── */}
+      <div className="orders-controls">
         <div className="filter-tabs">
           {['all', ...STATUS_OPTIONS].map(s => (
             <button key={s} className={`filter-tab ${filterStatus === s ? 'active' : ''}`} onClick={() => setFilterStatus(s)}>
@@ -141,6 +160,12 @@ function OrdersTab() {
             </button>
           ))}
         </div>
+        <input
+          className="items-search"
+          placeholder="Search by item name…"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
       </div>
 
       {error && <div className="error-banner">⚠️ {error}</div>}
@@ -150,14 +175,21 @@ function OrdersTab() {
       ) : filtered.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">📋</div>
-          <h3>{orders.length === 0 ? 'No orders yet' : 'No orders match this filter'}</h3>
-          <p>{orders.length === 0 ? 'Orders placed in the marketplace appear here in real-time.' : 'Try a different filter.'}</p>
+          <h3>{orders.length === 0 ? 'No orders yet' : 'No orders match your search'}</h3>
+          <p>{orders.length === 0 ? 'Orders placed in the marketplace appear here in real-time.' : 'Try a different filter or search.'}</p>
         </div>
       ) : (
         <div className="orders-table-wrap">
           <table className="orders-table">
             <thead>
-              <tr><th>Order ID</th><th>Item</th><th>Qty</th><th>Total</th><th>Date</th><th>Status</th><th>Update</th></tr>
+              <tr>
+                <th>Order ID</th>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Update</th>
+              </tr>
             </thead>
             <tbody>
               {filtered.map(o => (
@@ -165,16 +197,27 @@ function OrdersTab() {
                   <td className="order-id">#{o._id.slice(-6).toUpperCase()}</td>
                   <td className="order-item-cell">
                     <span className="order-item-name">{o.itemName || 'Unknown'}</span>
-                    {o.rarity && <span className={`badge-rarity badge-${o.rarity.toLowerCase()} order-rarity`}>{o.rarity}</span>}
+                    {o.rarity && (
+                      <span className={`badge-rarity badge-${o.rarity.toLowerCase()} order-rarity`}>{o.rarity}</span>
+                    )}
+                    {o.category && (
+                      <span className="order-category">{o.category}</span>
+                    )}
                   </td>
                   <td className="order-qty">×{o.quantity || 1}</td>
-                  <td className="order-total">💎 {(o.totalPrice || 0).toLocaleString()}</td>
                   <td className="order-date">
-                    {o.timestamp ? new Date(o.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—'}
+                    {o.timestamp
+                      ? new Date(o.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+                      : '—'}
                   </td>
                   <td><StatusBadge status={o.status || 'pending'} /></td>
                   <td>
-                    <select className="status-select" value={o.status || 'pending'} onChange={e => handleStatus(o._id, e.target.value)} disabled={updating === o._id}>
+                    <select
+                      className="status-select"
+                      value={o.status || 'pending'}
+                      onChange={e => handleStatus(o._id, e.target.value)}
+                      disabled={updating === o._id}
+                    >
                       {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </td>
@@ -189,7 +232,7 @@ function OrdersTab() {
 }
 
 // ─── ITEM FORM ────────────────────────────────────────────────────────────────
-// Shared form used for both adding a new item and editing an existing one
+// Used for both adding a new item and editing an existing one. No price field.
 function ItemForm({ initial = EMPTY_FORM, onSave, onCancel, saving }) {
   const [form, setForm] = useState(initial)
   const set_ = (k, v) => setForm(f => ({ ...f, [k]: v }))
@@ -200,7 +243,7 @@ function ItemForm({ initial = EMPTY_FORM, onSave, onCancel, saving }) {
       <div className="item-form-grid">
         <div className="form-group">
           <label>Item Name *</label>
-          <input required value={form.name} onChange={e => set_('name', e.target.value)} placeholder="e.g. Diamond" />
+          <input required value={form.name} onChange={e => set_('name', e.target.value)} placeholder="e.g. Diamond Sword" />
         </div>
         <div className="form-group">
           <label>Category *</label>
@@ -211,10 +254,6 @@ function ItemForm({ initial = EMPTY_FORM, onSave, onCancel, saving }) {
           <select value={form.rarity} onChange={e => set_('rarity', e.target.value)}>
             {RARITIES.map(r => <option key={r}>{r}</option>)}
           </select>
-        </div>
-        <div className="form-group">
-          <label>Price (💎) *</label>
-          <input required type="number" min="0" value={form.price} onChange={e => set_('price', e.target.value)} placeholder="0" />
         </div>
         <div className="form-group">
           <label>Stock *</label>
@@ -261,13 +300,15 @@ function ItemsTab() {
     return () => off(r)
   }, [])
 
-  // Add a brand-new item to Firebase
+  // Add a new item to Firebase (no price stored)
   const handleAdd = async (form) => {
     setSaving(true)
     try {
       await push(ref(db, 'items'), {
-        name: form.name, category: form.category, rarity: form.rarity,
-        price: Number(form.price), stock: Number(form.stock),
+        name: form.name,
+        category: form.category,
+        rarity: form.rarity,
+        stock: Number(form.stock),
         ...(form.image ? { image: form.image } : {}),
       })
       setShowForm(false)
@@ -275,13 +316,15 @@ function ItemsTab() {
     finally { setSaving(false) }
   }
 
-  // Update an existing item in Firebase
+  // Update an existing item in Firebase (no price stored)
   const handleEdit = async (form) => {
     setSaving(true)
     try {
       await update(ref(db, `items/${editItem._id}`), {
-        name: form.name, category: form.category, rarity: form.rarity,
-        price: Number(form.price), stock: Number(form.stock),
+        name: form.name,
+        category: form.category,
+        rarity: form.rarity,
+        stock: Number(form.stock),
         image: form.image || '',
       })
       setEditItem(null)
@@ -289,18 +332,18 @@ function ItemsTab() {
     finally { setSaving(false) }
   }
 
-  // Remove an item from Firebase after confirmation
+  // Delete an item from Firebase after confirmation
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this item?')) return
+    if (!window.confirm('Delete this item? This cannot be undone.')) return
     setDeleting(id)
     try { await remove(ref(db, `items/${id}`)) }
     catch (e) { setError('Failed to delete: ' + e.message) }
     finally { setDeleting(null) }
   }
 
-  // Bulk-import all items from the local allItems.js data file
+  // Bulk-import all items from the local allItems.js data file into Firebase
   const handleSeedAll = async () => {
-    if (!window.confirm(`This will import all ${Object.keys(ALL_ITEMS).length} items from your inventory. Existing items with the same keys will be overwritten. Continue?`)) return
+    if (!window.confirm(`This will import all ${Object.keys(ALL_ITEMS).length} items. Existing items with the same keys will be overwritten. Continue?`)) return
     setSeeding(true); setSeedMsg(null)
     try {
       await set(ref(db, 'items'), ALL_ITEMS)
@@ -311,30 +354,51 @@ function ItemsTab() {
   }
 
   const displayed = items.filter(i =>
-    !search || (i.name || '').toLowerCase().includes(search.toLowerCase()) ||
-    (i.category || '').toLowerCase().includes(search.toLowerCase())
+    !search ||
+    (i.name || '').toLowerCase().includes(search.toLowerCase()) ||
+    (i.category || '').toLowerCase().includes(search.toLowerCase()) ||
+    (i.rarity || '').toLowerCase().includes(search.toLowerCase())
   )
 
+  // ── Edit view ──
   if (editItem) return (
     <div>
-      <div className="section-head"><h2 className="section-title">Edit Item</h2></div>
-      <ItemForm initial={{ name: editItem.name, category: editItem.category, rarity: editItem.rarity, price: editItem.price, stock: editItem.stock, image: editItem.image || '' }} onSave={handleEdit} onCancel={() => setEditItem(null)} saving={saving} />
+      <div className="section-head">
+        <button className="back-btn" onClick={() => setEditItem(null)}>← Back to Items</button>
+        <h2 className="section-title">Edit Item</h2>
+      </div>
+      <ItemForm
+        initial={{ name: editItem.name, category: editItem.category, rarity: editItem.rarity, stock: editItem.stock, image: editItem.image || '' }}
+        onSave={handleEdit}
+        onCancel={() => setEditItem(null)}
+        saving={saving}
+      />
     </div>
   )
 
+  // ── Add view ──
   if (showForm) return (
     <div>
-      <div className="section-head"><h2 className="section-title">Add New Item</h2></div>
+      <div className="section-head">
+        <button className="back-btn" onClick={() => setShowForm(false)}>← Back to Items</button>
+        <h2 className="section-title">Add New Item</h2>
+      </div>
       <ItemForm onSave={handleAdd} onCancel={() => setShowForm(false)} saving={saving} />
     </div>
   )
 
+  // ── List view ──
   return (
     <>
       <div className="items-tab-header">
         <div className="items-tab-left">
           <span className="items-count-badge">{items.length} items in database</span>
-          <input className="items-search" placeholder="Search items…" value={search} onChange={e => setSearch(e.target.value)} />
+          <input
+            className="items-search"
+            placeholder="Search by name, category, rarity…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
         </div>
         <div className="items-tab-actions">
           <button className="btn-ghost" onClick={() => setShowForm(true)}>+ Add Item</button>
@@ -347,7 +411,11 @@ function ItemsTab() {
       {seedMsg && (
         <div className={`seed-msg ${seedMsg.ok ? 'seed-msg-ok' : 'seed-msg-err'}`}>
           {seedMsg.text}
-          {!seedMsg.ok && <p style={{fontSize:'0.82rem', marginTop:4}}>Make sure your Firebase rules allow writes: <code>{`{ "rules": { ".read": true, ".write": true } }`}</code></p>}
+          {!seedMsg.ok && (
+            <p style={{ fontSize: '0.82rem', marginTop: 4 }}>
+              Make sure your Firebase rules allow writes: <code>{`{ "rules": { ".read": true, ".write": true } }`}</code>
+            </p>
+          )}
         </div>
       )}
 
@@ -360,8 +428,9 @@ function ItemsTab() {
           <div className="empty-icon">📦</div>
           <h3>{items.length === 0 ? 'No items yet' : 'No items match your search'}</h3>
           <p>{items.length === 0
-            ? 'Click "Add Item" to add one manually, or use the "Import All Items" button to instantly load your entire inventory.'
-            : 'Try a different search term.'}</p>
+            ? 'Click "Add Item" to add one manually, or use the "Import All Items" button to load your entire inventory.'
+            : 'Try a different search term.'}
+          </p>
           {items.length === 0 && (
             <button className="seed-btn" style={{ marginTop: 20 }} onClick={handleSeedAll} disabled={seeding}>
               {seeding ? 'Importing…' : `⬆ Import All ${Object.keys(ALL_ITEMS).length} Items`}
@@ -372,25 +441,42 @@ function ItemsTab() {
         <div className="items-mgmt-table-wrap">
           <table className="orders-table items-mgmt-table">
             <thead>
-              <tr><th>Name</th><th>Category</th><th>Rarity</th><th>Price</th><th>Stock</th><th>Actions</th></tr>
+              <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Rarity</th>
+                <th>Stock</th>
+                <th>Actions</th>
+              </tr>
             </thead>
             <tbody>
               {displayed.map(item => (
                 <tr key={item._id} className="order-row animate-fade-in">
                   <td>
                     <div className="item-name-cell">
-                      {item.image && <img src={item.image} alt="" className="item-thumb" onError={e => e.target.style.display='none'} />}
-                      <span>{item.name}</span>
+                      {item.image && (
+                        <img src={item.image} alt="" className="item-thumb" onError={e => e.target.style.display = 'none'} />
+                      )}
+                      <span className="item-cell-name">{item.name}</span>
                     </div>
                   </td>
-                  <td style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{item.category}</td>
-                  <td><span className={`badge-rarity badge-${(item.rarity||'common').toLowerCase()}`}>{item.rarity}</span></td>
-                  <td className="order-total">💎 {(item.price || 0).toLocaleString()}</td>
-                  <td style={{ color: item.stock > 0 ? 'var(--green)' : 'var(--red)', fontWeight: 600 }}>{item.stock?.toLocaleString() ?? 0}</td>
+                  <td className="cell-muted">{item.category}</td>
+                  <td>
+                    <span className={`badge-rarity badge-${(item.rarity || 'common').toLowerCase()}`}>{item.rarity}</span>
+                  </td>
+                  <td>
+                    <span className={`stock-pill ${item.stock > 0 ? 'stock-in' : 'stock-out'}`}>
+                      {item.stock > 0 ? `${item.stock?.toLocaleString()} left` : 'Out of stock'}
+                    </span>
+                  </td>
                   <td>
                     <div className="item-row-actions">
                       <button className="row-btn edit-btn" onClick={() => setEditItem(item)}>Edit</button>
-                      <button className="row-btn delete-btn" onClick={() => handleDelete(item._id)} disabled={deleting === item._id}>
+                      <button
+                        className="row-btn delete-btn"
+                        onClick={() => handleDelete(item._id)}
+                        disabled={deleting === item._id}
+                      >
                         {deleting === item._id ? '…' : 'Delete'}
                       </button>
                     </div>
@@ -406,21 +492,15 @@ function ItemsTab() {
 }
 
 // ─── MAIN ADMIN ───────────────────────────────────────────────────────────────
-// Entry point for the admin route. Checks sessionStorage for existing auth,
-// shows the login screen if not authenticated, or the full dashboard if logged in.
 export default function Admin() {
-  const [tab, setTab] = useState('items')
-
-  // Check if the user already authenticated during this browser session
+  const [tab, setTab] = useState('orders')
   const [authed, setAuthed] = useState(() => sessionStorage.getItem(SESSION_KEY) === '1')
 
-  // Called when the user logs out — clears session and returns to login screen
   const handleLogout = () => {
     sessionStorage.removeItem(SESSION_KEY)
     setAuthed(false)
   }
 
-  // Show the password screen if the user is not authenticated
   if (!authed) {
     return <AdminLogin onSuccess={() => setAuthed(true)} />
   }
@@ -435,21 +515,20 @@ export default function Admin() {
           </div>
           <div className="admin-header-right">
             <div className="admin-live-badge"><span className="status-dot-sm" />Real-time</div>
-            {/* Logout button — clears session and shows login screen again */}
             <button className="logout-btn" onClick={handleLogout}>🔓 Logout</button>
           </div>
         </div>
 
         <div className="admin-tabs">
-          <button className={`admin-tab ${tab === 'items' ? 'active' : ''}`} onClick={() => setTab('items')}>
-            📦 Items
-          </button>
           <button className={`admin-tab ${tab === 'orders' ? 'active' : ''}`} onClick={() => setTab('orders')}>
             📋 Orders
           </button>
+          <button className={`admin-tab ${tab === 'items' ? 'active' : ''}`} onClick={() => setTab('items')}>
+            📦 Items
+          </button>
         </div>
 
-        {tab === 'items' ? <ItemsTab /> : <OrdersTab />}
+        {tab === 'orders' ? <OrdersTab /> : <ItemsTab />}
       </div>
     </div>
   )

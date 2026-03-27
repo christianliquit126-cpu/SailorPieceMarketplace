@@ -1,0 +1,319 @@
+.admin-page {
+  min-height: calc(100vh - 64px);
+  padding: 48px 0 80px;
+}
+
+.admin-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.admin-eyebrow {
+  font-size: 0.75rem;
+  color: var(--cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.admin-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 800;
+}
+
+.admin-live-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(16,185,129,0.1);
+  border: 1px solid rgba(16,185,129,0.25);
+  color: var(--green);
+  padding: 8px 16px;
+  border-radius: 24px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.status-dot-sm {
+  width: 7px;
+  height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--green);
+  animation: pulse-glow 2s ease infinite;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.admin-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 16px;
+  text-align: center;
+}
+
+.admin-stat-card.pending    { border-color: rgba(245,158,11,0.25); }
+.admin-stat-card.processing { border-color: rgba(59,130,246,0.25); }
+.admin-stat-card.completed  { border-color: rgba(16,185,129,0.25); }
+.admin-stat-card.revenue    { border-color: rgba(0,212,255,0.25); background: var(--cyan-glow); }
+
+.astat-n {
+  display: block;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.admin-stat-card.pending    .astat-n { color: var(--yellow); }
+.admin-stat-card.processing .astat-n { color: var(--blue); }
+.admin-stat-card.completed  .astat-n { color: var(--green); }
+.admin-stat-card.revenue    .astat-n { color: var(--cyan); }
+
+.astat-l {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.admin-filters {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.sidebar-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.filter-tab {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-family: inherit;
+  font-weight: 500;
+  transition: all 0.2s;
+  text-transform: capitalize;
+}
+
+.filter-tab:hover {
+  border-color: rgba(0,212,255,0.3);
+  color: var(--text-primary);
+}
+
+.filter-tab.active {
+  background: var(--cyan-glow);
+  border-color: rgba(0,212,255,0.4);
+  color: var(--cyan);
+  font-weight: 600;
+}
+
+.admin-loading {
+  text-align: center;
+  padding: 80px;
+  color: var(--text-muted);
+}
+
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0,212,255,0.15);
+  border-top-color: var(--cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+.orders-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.orders-table thead {
+  background: rgba(0,212,255,0.04);
+  border-bottom: 1px solid var(--border);
+}
+
+.orders-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.order-row {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.15s;
+}
+
+.order-row:last-child { border-bottom: none; }
+
+.order-row:hover {
+  background: rgba(255,255,255,0.025);
+}
+
+.orders-table td {
+  padding: 14px 16px;
+  vertical-align: middle;
+}
+
+.order-id {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.order-item-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.order-item-name {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.order-rarity {
+  font-size: 0.68rem;
+  align-self: flex-start;
+}
+
+.order-qty {
+  color: var(--text-secondary);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.order-total {
+  color: var(--cyan);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.order-date {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.status-select {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  text-transform: capitalize;
+  min-width: 120px;
+}
+
+.status-select:focus { border-color: rgba(0,212,255,0.4); }
+
+.status-select option {
+  background: #0d1421;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 24px;
+}
+
+.empty-icon {
+  font-size: 3.5rem;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  max-width: 380px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.error-banner {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: #ef4444;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 700px) {
+  .admin-title { font-size: 1.8rem; }
+  .admin-stats { grid-template-columns: repeat(2, 1fr); }
+  .orders-table th, .orders-table td { padding: 10px 12px; }
+}

@@ -1,0 +1,151 @@
+.item-card {
+  position: relative;
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.item-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-glow);
+  background: var(--bg-card-hover);
+}
+
+.item-card.out-of-stock {
+  opacity: 0.6;
+}
+
+.item-card-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(0,212,255,0.05) 0%, transparent 70%);
+  z-index: 0;
+}
+
+.rarity-border-uncommon  { border-color: rgba(16,185,129,0.25); }
+.rarity-border-rare      { border-color: rgba(59,130,246,0.25); }
+.rarity-border-epic      { border-color: rgba(139,92,246,0.3); }
+.rarity-border-legendary { border-color: rgba(245,158,11,0.35); }
+.rarity-border-mythical  { border-color: rgba(239,68,68,0.35); }
+.rarity-border-divine    { border-color: rgba(0,212,255,0.4); }
+
+.item-image-wrap {
+  position: relative;
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, #0a1220 0%, #0d1825 100%);
+  overflow: hidden;
+}
+
+.item-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s;
+}
+
+.item-card:hover .item-image {
+  transform: scale(1.06);
+}
+
+.item-image-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  background: linear-gradient(135deg, #0a1220, #0f1a2e);
+}
+
+.sold-out-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ef4444;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 10px rgba(239,68,68,0.6);
+}
+
+.rarity-badge-pos {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.item-card-body {
+  padding: 14px 16px 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.item-category {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.item-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.item-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.item-price-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.price-icon { font-size: 0.9rem; }
+
+.item-price {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--cyan);
+  text-shadow: 0 0 10px rgba(0,212,255,0.3);
+}
+
+.item-stock {
+  font-size: 0.78rem;
+  color: var(--green);
+  font-weight: 500;
+}
+
+.item-stock.stock-zero {
+  color: var(--red);
+}
+
+.buy-btn {
+  width: 100%;
+  padding: 10px;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+}

@@ -7,7 +7,7 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="navbar-inner container">
         <Link to="/" className="navbar-brand">
-          <span className="brand-icon">⚓</span>
+          <span className="brand-icon ci ci-anchor" />
           <span className="brand-name">Sailor<span className="brand-accent">Piece</span></span>
           <span className="brand-tag">Marketplace</span>
         </Link>

@@ -90,7 +90,7 @@ export default function Marketplace() {
           <div className="sidebar-section">
             <label className="sidebar-label">Search</label>
             <div className="search-wrap">
-              <span className="search-icon">🔍</span>
+              <span className="search-icon ci ci-search" />
               <input
                 type="text"
                 className="search-input"
@@ -99,7 +99,7 @@ export default function Marketplace() {
                 onChange={e => setSearch(e.target.value)}
               />
               {search && (
-                <button className="search-clear" onClick={() => setSearch('')}>✕</button>
+                <button className="search-clear" onClick={() => setSearch('')}><span className="ci ci-close" /></button>
               )}
             </div>
           </div>
@@ -147,7 +147,7 @@ export default function Marketplace() {
 
           {error && (
             <div className="error-banner">
-              <span>⚠️ {error}</span>
+              <span className="ci ci-warn" style={{ color: 'var(--red)', marginRight: 8 }} />{error}
             </div>
           )}
 
@@ -157,7 +157,7 @@ export default function Marketplace() {
             </div>
           ) : filtered.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-icon">🌊</div>
+              <div className="empty-icon"><span className="css-empty-wave" /></div>
               <h3>No items found</h3>
               <p>
                 {items.length === 0

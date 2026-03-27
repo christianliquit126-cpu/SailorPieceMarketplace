@@ -31,7 +31,6 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  font-size: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -243,12 +242,17 @@
   border-radius: 50%;
   background: linear-gradient(135deg, var(--cyan), var(--blue));
   color: #fff;
-  font-size: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 20px;
   box-shadow: 0 0 30px rgba(0,212,255,0.4);
+}
+
+/* Scale up the checkmark inside the success ring */
+.success-ring .ci-check {
+  width: 28px;
+  height: 22px;
 }
 
 .success-title {

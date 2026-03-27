@@ -100,12 +100,23 @@
 .admin-stat-card.completed  { border-color: rgba(16,185,129,0.25); }
 .admin-stat-card.cancelled  { border-color: rgba(239,68,68,0.25); }
 
-/* Emoji icon shown above the number in each stat card */
+/* CSS icon shown above the number in each stat card */
 .astat-icon {
   display: block;
-  font-size: 1.3rem;
-  margin-bottom: 6px;
-  line-height: 1;
+  margin: 0 auto 10px;
+  color: var(--text-muted);
+}
+.admin-stat-card.pending    .astat-icon { color: var(--yellow); }
+.admin-stat-card.processing .astat-icon { color: var(--blue); }
+.admin-stat-card.completed  .astat-icon { color: var(--green); }
+.admin-stat-card.cancelled  .astat-icon { color: var(--red); }
+
+/* Large CSS icons for empty states in admin */
+.css-empty-icon {
+  width: 48px !important;
+  height: 48px !important;
+  opacity: 0.2;
+  color: var(--text-secondary);
 }
 
 .astat-n {
@@ -579,9 +590,17 @@
 }
 
 .login-icon {
-  font-size: 3rem;
-  margin-bottom: 16px;
-  filter: drop-shadow(0 0 12px rgba(0,212,255,0.4));
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* Scale up the lock icon for the login screen */
+.login-icon .ci-lock {
+  width: 36px;
+  height: 40px;
+  color: var(--cyan);
+  filter: drop-shadow(0 0 10px rgba(0,212,255,0.5));
 }
 
 .login-title {

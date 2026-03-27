@@ -13,7 +13,7 @@ const DISCORD_WEBHOOK_URL =
 async function sendDiscordNotification(itemName, qty, rarity, category) {
   try {
     const message = [
-      `🛒 **New Order Received!**`,
+      `**New Order Received!**`,
       `> Hi, this is my order for **${itemName}**. Please check the admin panel.`,
       ``,
       `**Item:** ${itemName}`,
@@ -90,12 +90,14 @@ export default function BuyModal({ item, onClose }) {
   return (
     <div className="modal-backdrop" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="modal-box animate-fade-in">
-        <button className="modal-close" onClick={onClose}>✕</button>
+        <button className="modal-close" onClick={onClose}>
+          <span className="ci ci-close" />
+        </button>
 
         {done ? (
           // ── Success state shown after a confirmed purchase ──
           <div className="modal-success">
-            <div className="success-ring">✓</div>
+            <div className="success-ring"><span className="ci ci-check" /></div>
             <h2 className="success-title">Order Placed!</h2>
             <p className="success-sub">
               Your order has been submitted and is pending processing.
@@ -119,7 +121,7 @@ export default function BuyModal({ item, onClose }) {
               {item.image ? (
                 <img src={item.image} alt={item.name} className="modal-item-img" onError={e => e.target.style.display='none'} />
               ) : (
-                <div className="modal-item-img-fallback">🎴</div>
+                <div className="modal-item-img-fallback"><span className="ci ci-card" /></div>
               )}
               <div className="modal-item-info">
                 <span className={`badge-rarity badge-${(item.rarity||'common').toLowerCase()}`}>{item.rarity || 'Common'}</span>

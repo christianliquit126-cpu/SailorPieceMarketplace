@@ -54,7 +54,7 @@ function AdminLogin({ onSuccess }) {
   return (
     <div className="login-backdrop">
       <form className={`login-box ${shake ? 'shake' : ''}`} onSubmit={handleSubmit}>
-        <div className="login-icon">🔒</div>
+        <div className="login-icon"><span className="ci ci-lock" /></div>
         <h2 className="login-title">Admin Access</h2>
         <p className="login-sub">Enter the password to continue to the dashboard.</p>
         <div className="login-field">
@@ -125,27 +125,27 @@ function OrdersTab() {
       {/* ── Order stat cards — no revenue shown ── */}
       <div className="admin-stats">
         <div className="admin-stat-card">
-          <span className="astat-icon">📋</span>
+          <span className="astat-icon ci ci-list" />
           <span className="astat-n">{stats.total}</span>
           <span className="astat-l">Total Orders</span>
         </div>
         <div className="admin-stat-card pending">
-          <span className="astat-icon">⏳</span>
+          <span className="astat-icon ci ci-clock" />
           <span className="astat-n">{stats.pending}</span>
           <span className="astat-l">Pending</span>
         </div>
         <div className="admin-stat-card processing">
-          <span className="astat-icon">⚙️</span>
+          <span className="astat-icon ci ci-gear" />
           <span className="astat-n">{stats.processing}</span>
           <span className="astat-l">Processing</span>
         </div>
         <div className="admin-stat-card completed">
-          <span className="astat-icon">✅</span>
+          <span className="astat-icon ci ci-circle-check" />
           <span className="astat-n">{stats.completed}</span>
           <span className="astat-l">Completed</span>
         </div>
         <div className="admin-stat-card cancelled">
-          <span className="astat-icon">❌</span>
+          <span className="astat-icon ci ci-circle-x" />
           <span className="astat-n">{stats.cancelled}</span>
           <span className="astat-l">Cancelled</span>
         </div>
@@ -168,13 +168,13 @@ function OrdersTab() {
         />
       </div>
 
-      {error && <div className="error-banner">⚠️ {error}</div>}
+      {error && <div className="error-banner"><span className="ci ci-warn" style={{ marginRight: 8 }} />{error}</div>}
 
       {loading ? (
         <div className="admin-loading"><div className="loader" /><p>Loading orders…</p></div>
       ) : filtered.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-icon">📋</div>
+          <div className="empty-icon"><span className="ci ci-list css-empty-icon" /></div>
           <h3>{orders.length === 0 ? 'No orders yet' : 'No orders match your search'}</h3>
           <p>{orders.length === 0 ? 'Orders placed in the marketplace appear here in real-time.' : 'Try a different filter or search.'}</p>
         </div>
@@ -347,9 +347,9 @@ function ItemsTab() {
     setSeeding(true); setSeedMsg(null)
     try {
       await set(ref(db, 'items'), ALL_ITEMS)
-      setSeedMsg({ ok: true, text: `✅ Successfully imported ${Object.keys(ALL_ITEMS).length} items!` })
+      setSeedMsg({ ok: true, text: `Imported ${Object.keys(ALL_ITEMS).length} items successfully.` })
     } catch (e) {
-      setSeedMsg({ ok: false, text: `❌ Import failed: ${e.message}` })
+      setSeedMsg({ ok: false, text: `Import failed: ${e.message}` })
     } finally { setSeeding(false) }
   }
 
@@ -403,7 +403,7 @@ function ItemsTab() {
         <div className="items-tab-actions">
           <button className="btn-ghost" onClick={() => setShowForm(true)}>+ Add Item</button>
           <button className="seed-btn" onClick={handleSeedAll} disabled={seeding}>
-            {seeding ? <><span className="btn-spinner" /> Importing…</> : `⬆ Import All ${Object.keys(ALL_ITEMS).length} Items`}
+            {seeding ? <><span className="btn-spinner" /> Importing…</> : <><span className="ci ci-arrow-up" style={{ marginRight: 6 }} />Import All {Object.keys(ALL_ITEMS).length} Items</>}
           </button>
         </div>
       </div>
@@ -419,13 +419,13 @@ function ItemsTab() {
         </div>
       )}
 
-      {error && <div className="error-banner">⚠️ {error}</div>}
+      {error && <div className="error-banner"><span className="ci ci-warn" style={{ marginRight: 8 }} />{error}</div>}
 
       {loading ? (
         <div className="admin-loading"><div className="loader" /><p>Loading items…</p></div>
       ) : displayed.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-icon">📦</div>
+          <div className="empty-icon"><span className="ci ci-box css-empty-icon" /></div>
           <h3>{items.length === 0 ? 'No items yet' : 'No items match your search'}</h3>
           <p>{items.length === 0
             ? 'Click "Add Item" to add one manually, or use the "Import All Items" button to load your entire inventory.'
@@ -433,7 +433,7 @@ function ItemsTab() {
           </p>
           {items.length === 0 && (
             <button className="seed-btn" style={{ marginTop: 20 }} onClick={handleSeedAll} disabled={seeding}>
-              {seeding ? 'Importing…' : `⬆ Import All ${Object.keys(ALL_ITEMS).length} Items`}
+              {seeding ? 'Importing…' : <>Import All {Object.keys(ALL_ITEMS).length} Items</>}
             </button>
           )}
         </div>
@@ -515,16 +515,18 @@ export default function Admin() {
           </div>
           <div className="admin-header-right">
             <div className="admin-live-badge"><span className="status-dot-sm" />Real-time</div>
-            <button className="logout-btn" onClick={handleLogout}>🔓 Logout</button>
+            <button className="logout-btn" onClick={handleLogout}>
+              <span className="ci ci-logout" style={{ marginRight: 6 }} />Logout
+            </button>
           </div>
         </div>
 
         <div className="admin-tabs">
           <button className={`admin-tab ${tab === 'orders' ? 'active' : ''}`} onClick={() => setTab('orders')}>
-            📋 Orders
+            Orders
           </button>
           <button className={`admin-tab ${tab === 'items' ? 'active' : ''}`} onClick={() => setTab('items')}>
-            📦 Items
+            Items
           </button>
         </div>
 

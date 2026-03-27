@@ -58,8 +58,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
   background: linear-gradient(135deg, #0a1220, #0f1a2e);
+}
+
+/* The CSS card icon fills the fallback area */
+.item-image-fallback .ci-card {
+  width: 60%;
+  height: 60%;
 }
 
 .sold-out-overlay {

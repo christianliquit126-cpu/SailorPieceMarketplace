@@ -54,7 +54,7 @@ export default function ItemCard({ item, onBuy }) {
       <div className="item-image-wrap">
         {imgError || !item.image ? (
           <div className="item-image-fallback">
-            <span>🎴</span>
+            <span className="ci ci-card" />
           </div>
         ) : (
           <img

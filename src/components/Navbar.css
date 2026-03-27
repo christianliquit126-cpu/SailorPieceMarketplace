@@ -23,8 +23,10 @@
 }
 
 .brand-icon {
-  font-size: 1.4rem;
-  filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.6));
+  width: 22px;
+  height: 24px;
+  color: var(--cyan);
+  filter: drop-shadow(0 0 6px rgba(0, 212, 255, 0.7));
 }
 
 .brand-name {
